@@ -1,0 +1,12 @@
+# Source control ignores
+.gemini/
+/tmp/
+/brain/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+config/database.php.bak
+uploads/products/img_*
+uploads/brands/img_*
+uploads/company/img_*

@@ -30,17 +30,17 @@ try {
 
 // Role permissions: module => [allowed roles]
 define('ROLE_PERMISSIONS', [
-    'users'      => ['admin'],
-    'settings'   => ['admin'],
-    'reports'    => ['admin', 'manager'],
-    'stock'      => ['admin', 'manager'],
-    'sales'      => ['admin', 'manager', 'salesman'],
-    'challan'    => ['admin', 'manager', 'salesman'],
-    'quotation'  => ['admin', 'manager', 'salesman'],
-    'deposit'    => ['admin', 'manager'],
-    'products'   => ['admin', 'manager', 'salesman'],
-    'vendors'    => ['admin', 'manager'],
-    'customers'  => ['admin', 'manager', 'salesman'],
+    'users'      => ['superadmin', 'admin'],
+    'settings'   => ['superadmin', 'admin'],
+    'reports'    => ['superadmin', 'admin', 'manager'],
+    'stock'      => ['superadmin', 'admin', 'manager'],
+    'sales'      => ['superadmin', 'admin', 'manager', 'salesman'],
+    'challan'    => ['superadmin', 'admin', 'manager', 'salesman'],
+    'quotation'  => ['superadmin', 'admin', 'manager', 'salesman'],
+    'deposit'    => ['superadmin', 'admin', 'manager'],
+    'products'   => ['superadmin', 'admin', 'manager', 'salesman'],
+    'vendors'    => ['superadmin', 'admin', 'manager'],
+    'customers'  => ['superadmin', 'admin', 'manager', 'salesman'],
 ]);
 
 function hasPermission(string $module): bool {
@@ -48,6 +48,10 @@ function hasPermission(string $module): bool {
         session_start();
     }
     if (!isset($_SESSION['role'])) return false;
+    
+    // Superadmin has access to everything
+    if ($_SESSION['role'] === 'superadmin') return true;
+
     $perms = ROLE_PERMISSIONS;
     if (!isset($perms[$module])) return true; // no restriction defined
     return in_array($_SESSION['role'], $perms[$module]);

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
 // Only admins can access this page
-if ($_SESSION['role'] !== 'admin') {
+if (!in_array($_SESSION['role'], ['admin', 'superadmin'])) {
     echo "<script>window.location.href='".BASE_URL."dashboard/index.php';</script>";
     exit();
 }

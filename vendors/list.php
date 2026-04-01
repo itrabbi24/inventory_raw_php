@@ -1,10 +1,10 @@
 <?php
-$pageTitle = 'Vendor List';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
-$stmt = $pdo->query("SELECT * FROM vendors WHERE status=1 ORDER BY id DESC");
-$vendors = $stmt->fetchAll();
+$message = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_vendor'])) {
     $name    = sanitize($_POST['name'] ?? '');
@@ -16,10 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_vendor'])) {
     if (!empty($name)) {
         $stmt = $pdo->prepare("INSERT INTO vendors (name, phone, email, address, company_name) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$name, $phone, $email, $address, $company]);
+        $_SESSION['message'] = "Vendor '{$name}' added successfully!";
         header('Location: list.php');
         exit();
     }
 }
+
+$pageTitle = 'Vendor List';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$stmt = $pdo->query("SELECT * FROM vendors WHERE status=1 ORDER BY id DESC");
+$vendors = $stmt->fetchAll();
 ?>
 
 <div class="page-wrapper">
@@ -33,6 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_vendor'])) {
                 <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addVendorModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Vendor</a>
             </div>
         </div>
+
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
 
         <div class="card">
             <div class="card-body">

@@ -1,10 +1,7 @@
 <?php
-$pageTitle = 'Add Stock';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
-$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 ORDER BY name ASC")->fetchAll();
-$vendors  = $pdo->query("SELECT id, name FROM vendors WHERE status=1 ORDER BY name ASC")->fetchAll();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
@@ -35,7 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             logActivity($pdo, $_SESSION['user_id'], "Added stock for product ID: {$product_id}", 'stock_in', $stock_id);
 
             $pdo->commit();
-            $message = "Stock added successfully!";
+            $_SESSION['message'] = "Stock added successfully!";
+            header('Location: list.php');
+            exit();
         } catch (Exception $e) {
             $pdo->rollBack();
             $error = "Error: " . $e->getMessage();
@@ -44,6 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please select valid product and quantity";
     }
 }
+
+$pageTitle = 'Add Stock';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 ORDER BY name ASC")->fetchAll();
+$vendors  = $pdo->query("SELECT id, name FROM vendors WHERE status=1 ORDER BY name ASC")->fetchAll();
 ?>
 
 <div class="page-wrapper">

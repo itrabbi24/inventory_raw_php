@@ -11,19 +11,23 @@ $stmt = $pdo->prepare("SELECT COALESCE(SUM(total_amount),0) FROM sales WHERE sal
 $stmt->execute([$start_date, $end_date]);
 $totalRevenue = $stmt->fetchColumn();
 
-// Total COGS (Cost of Goods Sold - using Purchase prices)
-// Calculate by joining sale_items with stock_in to get weighted purchase price? 
-// Simplification: use the most recent purchase price or sum items in stock_in for that period
-$stmt = $pdo->prepare("SELECT COALESCE(SUM(total_price),0) FROM stock_in WHERE purchase_date BETWEEN ? AND ?");
+// Total COGS (Cost of Goods Sold)
+// Calculated from sale_items joined with sales to filter by date
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(si.cost_price * si.quantity), 0) 
+    FROM sale_items si 
+    JOIN sales s ON si.sale_id = s.id 
+    WHERE s.sale_date BETWEEN ? AND ?
+");
 $stmt->execute([$start_date, $end_date]);
-$totalPurchase = $stmt->fetchColumn();
+$totalCOGS = $stmt->fetchColumn();
 
 // Total Expenses
 $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM expenses WHERE expense_date BETWEEN ? AND ?");
 $stmt->execute([$start_date, $end_date]);
 $totalExpenses = $stmt->fetchColumn();
 
-$grossProfit = $totalRevenue - $totalPurchase;
+$grossProfit = $totalRevenue - $totalCOGS;
 $netProfit   = $grossProfit - $totalExpenses;
 ?>
 
@@ -54,7 +58,7 @@ $netProfit   = $grossProfit - $totalExpenses;
                             </thead>
                             <tbody>
                                 <tr><td><strong>A. Total Revenue (Sales)</strong></td><td class="text-end"><?php echo formatCurrency($totalRevenue); ?></td></tr>
-                                <tr><td><strong>B. Total Purchases (COGS)</strong></td><td class="text-end"><?php echo formatCurrency($totalPurchase); ?></td></tr>
+                                <tr><td><strong>B. Cost of Goods Sold (COGS)</strong></td><td class="text-end"><?php echo formatCurrency($totalCOGS); ?></td></tr>
                                 <tr class="bg-light"><td><strong>Gross Profit (A - B)</strong></td><td class="text-end"><strong><?php echo formatCurrency($grossProfit); ?></strong></td></tr>
                                 <tr><td><strong>C. Total Operating Expenses</strong></td><td class="text-end"><?php echo formatCurrency($totalExpenses); ?></td></tr>
                                 <tr class="<?php echo ($netProfit >=0) ? 'bg-success text-white' : 'bg-danger text-white'; ?>">

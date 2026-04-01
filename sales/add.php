@@ -1,10 +1,7 @@
 <?php
-$pageTitle = 'Add Sales';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
-$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 AND current_stock > 0 ORDER BY name ASC")->fetchAll();
-$customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY name ASC")->fetchAll();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
@@ -27,17 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paid_amount    = (float)($_POST['paid_amount'] ?? 0);
     $payment_method = sanitize($_POST['payment_method'] ?? 'cash');
 
-    if ($customer_id > 0 && !empty($product_ids)) {
+    if ($customer_id >= 0 && !empty($product_ids)) {
         try {
             $pdo->beginTransaction();
             
             // Insert Sales main record
             $stmt = $pdo->prepare("INSERT INTO sales (invoice_no, customer_id, sale_date, subtotal, discount, vat, total_amount, paid_amount, payment_method, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$invoice, $customer_id, $date, $subtotal, $discount, $vat, $total_amount, $paid_amount, $payment_method, $_SESSION['user_id']]);
+            $stmt->execute([$invoice, $customer_id == 0 ? null : $customer_id, $date, $subtotal, $discount, $vat, $total_amount, $paid_amount, $payment_method, $_SESSION['user_id']]);
             $sale_id = $pdo->lastInsertId();
 
             // Insert Sale Items and Deduct Stock
-            $stmt_item = $pdo->prepare("INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt_item = $pdo->prepare("INSERT INTO sale_items (sale_id, product_id, cost_price, quantity, unit_price, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?, ?)");
             
             foreach ($product_ids as $index => $pid) {
                 $pid   = (int)$pid;
@@ -47,14 +44,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $wr    = (int)$warranties[$index];
                 
                 if ($pid > 0 && $qty > 0) {
-                    $stmt_item->execute([$sale_id, $pid, $qty, $price, $sn, $wr]);
+                    // Fetch buying price
+                    $p_info = $pdo->prepare("SELECT buying_price FROM products WHERE id = ?");
+                    $p_info->execute([$pid]);
+                    $buying_price = (float)$p_info->fetchColumn();
+
+                    $stmt_item->execute([$sale_id, $pid, $buying_price, $qty, $price, $sn, $wr]);
                     updateStock($pdo, $pid, $qty, 'subtract');
                 }
             }
             
             logActivity($pdo, $_SESSION['user_id'], "New sale created: {$invoice}", 'sales', $sale_id);
             $pdo->commit();
-            $message = "Sale record created successfully!";
+            $_SESSION['message'] = "Sale record created successfully!";
+            header('Location: list.php');
+            exit();
         } catch (Exception $e) {
             $pdo->rollBack();
             $error = "Error: " . $e->getMessage();
@@ -63,6 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please select customer and at least one product";
     }
 }
+
+$pageTitle = 'Add Sales';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 AND current_stock > 0 ORDER BY name ASC")->fetchAll();
+$customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY name ASC")->fetchAll();
 ?>
 
 <div class="page-wrapper">

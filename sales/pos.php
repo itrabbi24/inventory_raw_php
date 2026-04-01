@@ -227,14 +227,15 @@ function renderProductGrid(products) {
     }
 
     products.forEach(p => {
-        let imgPath = p.image ? `../../assets/img/product/${p.image}` : `../../assets/img/icons/product.svg`;
+        let price = parseFloat(p.selling_price || 0);
+        let imgPath = p.image ? `../../uploads/products/${p.image}` : `../../assets/img/icons/product.svg`;
         let card = `
-            <div class="pos-product-card shadow-sm" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.purchase_price})">
+            <div class="pos-product-card shadow-sm" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${price})">
                 <div class="img-box">
                     <img src="${imgPath}" alt="img" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 </div>
                 <div class="name" title="${p.name}">${p.name}</div>
-                <div class="price">৳ ${parseFloat(p.purchase_price).toFixed(2)}</div>
+                <div class="price">৳ ${price.toFixed(2)}</div>
                 <div class="small text-muted mt-1" style="font-size:0.65rem">Stock: ${p.current_stock}</div>
             </div>
         `;
@@ -312,24 +313,59 @@ function clearCart() {
 }
 
 function finalizePosSale() {
-    if(cart.length === 0) return alert('Your cart is empty. Please add some products.');
+    if(cart.length === 0) return Swal.fire('Error', 'Your cart is empty', 'error');
     
+    let subtotal = cart.reduce((total, item) => total + (item.price * item.qty), 0);
+    let discount = parseFloat(document.getElementById('posDiscount').value) || 0;
+    let grandTotal = subtotal - discount;
     let customerId = document.getElementById('posCustomerId').value;
-    let total = document.getElementById('posGrandTotal').innerText;
     
-    // In a real app, this would be an AJAX call to process the sale
     Swal.fire({
-        title: 'Complete Sale?',
-        text: `Total Amount: ${total}`,
+        title: 'Finalize POS Sale?',
+        text: `Grand Total: ৳ ${grandTotal.toFixed(2)}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#ff9f43',
-        confirmButtonText: 'Yes, Complete'
+        confirmButtonText: 'Yes, Complete Sale'
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire('Success', 'Sale has been processed (Demo Mode)', 'success');
-            cart = [];
-            renderCart();
+            Swal.showLoading();
+            
+            fetch('../ajax/process_pos_sale.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cart: cart,
+                    customer_id: customerId,
+                    subtotal: subtotal,
+                    discount: discount,
+                    grand_total: grandTotal
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message + ' Invoice No: ' + data.invoice_no,
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-print"></i> Print Invoice',
+                        cancelButtonText: 'New Sale'
+                    }).then((res) => {
+                        if(res.isConfirmed) {
+                            window.open(`view.php?id=${data.sale_id}`, '_blank');
+                        }
+                        cart = [];
+                        renderCart();
+                        document.getElementById('posDiscount').value = 0;
+                        loadProducts(); 
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(err => Swal.fire('Error', 'Processing failed', 'error'));
         }
     });
 }

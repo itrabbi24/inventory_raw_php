@@ -1,10 +1,7 @@
 <?php
-$pageTitle = 'Add Quotation';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
-$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 ORDER BY name ASC")->fetchAll();
-$customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY name ASC")->fetchAll();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
@@ -24,11 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $discount       = (float)($_POST['discount'] ?? 0);
     $total_amount   = (float)($_POST['grand_total'] ?? 0);
 
-    if ($customer_id > 0 && !empty($product_ids)) {
+    if ($customer_id >= 0 && !empty($product_ids)) {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO quotations (quotation_no, customer_id, quotation_date, subtotal, discount, total_amount, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$quotation_no, $customer_id, $date, $subtotal, $discount, $total_amount, $_SESSION['user_id']]);
+            $stmt->execute([$quotation_no, $customer_id == 0 ? null : $customer_id, $date, $subtotal, $discount, $total_amount, $_SESSION['user_id']]);
             $quotation_id = $pdo->lastInsertId();
 
             $stmt_item = $pdo->prepare("INSERT INTO quotation_items (quotation_id, product_id, quantity, unit_price, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?)");
@@ -45,10 +42,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             logActivity($pdo, $_SESSION['user_id'], "Quotation created: {$quotation_no}", 'quotations', $quotation_id);
             $pdo->commit();
-            $message = "Quotation saved successfully!";
-        } catch (Exception $e) { $pdo->rollBack(); $error = "Error: " . $e->getMessage(); }
+            $_SESSION['message'] = "Quotation saved successfully!";
+            header('Location: list.php');
+            exit();
+        } catch (Exception $e) { 
+            $pdo->rollBack(); 
+            $error = "Error: " . $e->getMessage(); 
+        }
     }
 }
+
+$pageTitle = 'Add Quotation';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$products = $pdo->query("SELECT id, name, current_stock FROM products WHERE status=1 ORDER BY name ASC")->fetchAll();
+$customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY name ASC")->fetchAll();
 ?>
 
 <div class="page-wrapper">

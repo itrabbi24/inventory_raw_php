@@ -76,6 +76,8 @@ $products = $stmt->fetchAll();
                                 <th>Category</th>
                                 <th>Brand</th>
                                 <th>Unit</th>
+                                <th>Buying Price</th>
+                                <th>Selling Price</th>
                                 <th>Current Stock</th>
                                 <th>Action</th>
                             </tr>
@@ -111,6 +113,8 @@ $products = $stmt->fetchAll();
                                 <td><?php echo $product['category_name']; ?></td>
                                 <td><?php echo $product['brand_name']; ?></td>
                                 <td><?php echo $product['unit']; ?></td>
+                                <td class="fw-bold text-dark">৳ <?php echo number_format($product['buying_price'] ?? 0, 2); ?></td>
+                                <td class="fw-bold text-primary">৳ <?php echo number_format($product['selling_price'] ?? 0, 2); ?></td>
                                 <td><span class="badges <?php echo ($product['current_stock'] <= $product['min_stock_alert']) ? 'bg-lightred' : 'bg-lightgreen'; ?>"><?php echo $product['current_stock']; ?></span></td>
                                 <td>
                                     <a class="me-3" href="<?php echo BASE_URL; ?>products/barcode.php?id=<?php echo $product['id']; ?>" title="Print Barcodes">

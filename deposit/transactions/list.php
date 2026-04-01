@@ -1,12 +1,10 @@
 <?php
-$pageTitle = 'Deposit Transactions';
-require_once __DIR__ . '/../../includes/header.php';
-require_once __DIR__ . '/../../includes/sidebar.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/auth_check.php';
 
-$stmt = $pdo->query("SELECT dt.*, d.name as account_name FROM depositor_transactions dt LEFT JOIN depositors d ON dt.depositor_id = d.id ORDER BY dt.id DESC");
-$transactions = $stmt->fetchAll();
-
-$deposit_accounts = $pdo->query("SELECT * FROM depositors WHERE status=1")->fetchAll();
+$message = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
     $dep_id = (int)($_POST['deposit_account_id'] ?? 0);
@@ -18,10 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
     if ($dep_id > 0 && $amount > 0) {
         $stmt = $pdo->prepare("INSERT INTO depositor_transactions (depositor_id, amount, type, transaction_date, notes, created_by) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$dep_id, $amount, $type, $date, $notes, $_SESSION['user_id']]);
+        $_SESSION['message'] = "Transaction of " . formatCurrency($amount) . " saved!";
         header('Location: list.php');
         exit();
     }
 }
+
+$pageTitle = 'Deposit Transactions';
+require_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../includes/sidebar.php';
+
+$stmt = $pdo->query("SELECT dt.*, d.name as account_name FROM depositor_transactions dt LEFT JOIN depositors d ON dt.depositor_id = d.id ORDER BY dt.id DESC");
+$transactions = $stmt->fetchAll();
+
+$deposit_accounts = $pdo->query("SELECT * FROM depositors WHERE status=1")->fetchAll();
 ?>
 
 <div class="page-wrapper">
@@ -35,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
                 <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addTransModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">New Transaction</a>
             </div>
         </div>
+
+        <?php if(isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
 
         <div class="card">
             <div class="card-body">

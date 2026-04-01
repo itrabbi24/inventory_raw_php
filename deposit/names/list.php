@@ -1,10 +1,10 @@
 <?php
-$pageTitle = 'Deposit List';
-require_once __DIR__ . '/../../includes/header.php';
-require_once __DIR__ . '/../../includes/sidebar.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/auth_check.php';
 
-$stmt = $pdo->query("SELECT * FROM depositors WHERE status=1 ORDER BY id DESC");
-$deposits = $stmt->fetchAll();
+$message = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_deposit'])) {
     $name    = sanitize($_POST['name'] ?? '');
@@ -14,10 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_deposit'])) {
     if (!empty($name)) {
         $stmt = $pdo->prepare("INSERT INTO depositors (name, phone, address) VALUES (?, ?, ?)");
         $stmt->execute([$name, $phone, $address]);
+        $_SESSION['message'] = "Deposit account '{$name}' created!";
         header('Location: list.php');
         exit();
     }
 }
+
+$pageTitle = 'Deposit List';
+require_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../includes/sidebar.php';
+
+$stmt = $pdo->query("SELECT * FROM depositors WHERE status=1 ORDER BY id DESC");
+$deposits = $stmt->fetchAll();
 ?>
 
 <div class="page-wrapper">
@@ -31,6 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_deposit'])) {
                 <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addDepModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Deposit Account</a>
             </div>
         </div>
+
+        <?php if(isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
 
         <div class="card">
             <div class="card-body">

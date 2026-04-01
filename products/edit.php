@@ -3,6 +3,22 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 
+$id = (int)($_GET['id'] ?? 0);
+if (!$id) {
+    header('Location: list.php');
+    exit();
+}
+
+// Fetch current product data
+$stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+$stmt->execute([$id]);
+$product = $stmt->fetch();
+
+if (!$product) {
+    header('Location: list.php');
+    exit();
+}
+
 $message = '';
 $error = '';
 
@@ -17,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selling_price  = (float)($_POST['selling_price'] ?? 0);
     $description    = sanitize($_POST['description'] ?? '');
 
-    $image = '';
+    $image = $product['image'];
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         try {
             $image = uploadFile($_FILES['image'], 'products');
@@ -28,28 +44,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($name)) {
         $error = 'Product name is required';
-    } else {
-        // Duplicate Check
-        $check = $pdo->prepare("SELECT id FROM products WHERE name = ? AND model = ? AND status = 1");
-        $check->execute([$name, $model]);
-        if ($check->rowCount() > 0) {
-            $error = "Product '{$name}' with model '{$model}' already exists!";
-        }
     }
 
     if (!$error) {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("
-                INSERT INTO products (name, model, category_id, brand_id, unit, min_stock_alert, buying_price, selling_price, image, description, current_stock) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+                UPDATE products 
+                SET name=?, model=?, category_id=?, brand_id=?, unit=?, min_stock_alert=?, buying_price=?, selling_price=?, image=?, description=? 
+                WHERE id=?
             ");
-            $stmt->execute([$name, $model, $category_id, $brand_id, $unit, $min_stock, $buying_price, $selling_price, $image, $description]);
-            $product_id = $pdo->lastInsertId();
+            $stmt->execute([$name, $model, $category_id, $brand_id, $unit, $min_stock, $buying_price, $selling_price, $image, $description, $id]);
             
-            logActivity($pdo, $_SESSION['user_id'], 'Added new product', 'products', $product_id);
+            logActivity($pdo, $_SESSION['user_id'], "Updated product: {$name}", 'products', $id);
             $pdo->commit();
-            $_SESSION['message'] = 'Product added successfully!';
+            $_SESSION['message'] = 'Product updated successfully!';
             header('Location: list.php');
             exit();
         } catch (PDOException $e) {
@@ -59,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Add Product';
+$pageTitle = 'Edit Product';
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
@@ -71,41 +80,37 @@ $brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
     <div class="content">
         <div class="page-header">
             <div class="page-title">
-                <h4>Product Add</h4>
-                <h6>Create new product</h6>
+                <h4>Product Edit</h4>
+                <h6>Update existing product</h6>
             </div>
         </div>
         
-        <?php if ($message): ?>
-            <div class="alert alert-success mt-3"><?php echo $message; ?></div>
-        <?php endif; ?>
         <?php if ($error): ?>
             <div class="alert alert-danger mt-3"><?php echo $error; ?></div>
         <?php endif; ?>
 
         <div class="card">
             <div class="card-body">
-                <form action="add.php" method="POST" enctype="multipart/form-data">
+                <form action="edit.php?id=<?php echo $id; ?>" method="POST" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Product Name</label>
-                                <input type="text" name="name" class="form-control" required>
+                                <input type="text" name="name" class="form-control" value="<?php echo $product['name']; ?>" required>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Model</label>
-                                <input type="text" name="model" class="form-control">
+                                <input type="text" name="model" class="form-control" value="<?php echo $product['model']; ?>">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Category</label>
                                 <select class="select" name="category_id">
-                                    <option value="0">Choose Category</option>
                                     <?php foreach ($categories as $cat): ?>
-                                        <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                        <option value="<?php echo $cat['id']; ?>" <?php echo ($cat['id'] == $product['category_id']) ? 'selected' : ''; ?>><?php echo $cat['name']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -114,9 +119,8 @@ $brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
                             <div class="form-group">
                                 <label>Brand</label>
                                 <select class="select" name="brand_id">
-                                    <option value="0">Choose Brand</option>
                                     <?php foreach ($brands as $brand): ?>
-                                        <option value="<?php echo $brand['id']; ?>"><?php echo $brand['name']; ?></option>
+                                        <option value="<?php echo $brand['id']; ?>" <?php echo ($brand['id'] == $product['brand_id']) ? 'selected' : ''; ?>><?php echo $brand['name']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -125,35 +129,35 @@ $brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
                             <div class="form-group">
                                 <label>Unit</label>
                                 <select class="select" name="unit">
-                                    <option value="pcs">Pcs</option>
-                                    <option value="box">Box</option>
-                                    <option value="set">Set</option>
-                                    <option value="kg">KG</option>
+                                    <option value="pcs" <?php echo ($product['unit'] == 'pcs') ? 'selected' : ''; ?>>Pcs</option>
+                                    <option value="box" <?php echo ($product['unit'] == 'box') ? 'selected' : ''; ?>>Box</option>
+                                    <option value="set" <?php echo ($product['unit'] == 'set') ? 'selected' : ''; ?>>Set</option>
+                                    <option value="kg" <?php echo ($product['unit'] == 'kg') ? 'selected' : ''; ?>>KG</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Minimum Stock alert</label>
-                                <input type="number" name="min_stock" value="5" class="form-control">
+                                <input type="number" name="min_stock" value="<?php echo $product['min_stock_alert']; ?>" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Buying Price (৳)</label>
-                                <input type="number" name="buying_price" value="0" step="0.01" class="form-control" required>
+                                <input type="number" name="buying_price" value="<?php echo $product['buying_price']; ?>" step="0.01" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Selling Price (৳)</label>
-                                <input type="number" name="selling_price" value="0" step="0.01" class="form-control" required>
+                                <input type="number" name="selling_price" value="<?php echo $product['selling_price']; ?>" step="0.01" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label>Description</label>
-                                <textarea class="form-control" name="description"></textarea>
+                                <textarea class="form-control" name="description"><?php echo $product['description']; ?></textarea>
                             </div>
                         </div>
                         <div class="col-lg-12">
@@ -166,10 +170,15 @@ $brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
                                         <h4>Drag and drop a file to upload</h4>
                                     </div>
                                 </div>
+                                <?php if($product['image']): ?>
+                                    <div class="mt-2">
+                                        <img src="<?php echo BASE_URL . 'uploads/products/' . $product['image']; ?>" class="rounded" style="width: 100px;">
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <button type="submit" class="btn btn-submit me-2">Submit</button>
+                            <button type="submit" class="btn btn-submit me-2">Update Product</button>
                             <a href="list.php" class="btn btn-cancel">Cancel</a>
                         </div>
                     </div>

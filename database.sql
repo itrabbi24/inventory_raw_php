@@ -51,7 +51,10 @@ CREATE TABLE `products` (
   `unit` ENUM('pcs','box','set','kg','liter') NOT NULL DEFAULT 'pcs',
   `current_stock` INT NOT NULL DEFAULT 0,
   `min_stock_alert` INT NOT NULL DEFAULT 5,
+  `buying_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `selling_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `image` VARCHAR(255),
+
   `status` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL,

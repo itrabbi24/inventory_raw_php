@@ -252,17 +252,18 @@ $lowStock = $pdo->query("SELECT * FROM products WHERE current_stock <= min_stock
                             <li class="d-flex align-items-center mb-3 pb-3 border-bottom-dashed">
                                 <div class="avatar-sm me-3">
                                     <span class="avatar-title rounded-circle bg-soft-warning text-warning p-2 small">
-                                        <?php echo strtoupper(substr($activity['module'], 0, 1)); ?>
+                                        <?php echo strtoupper(substr((string)($activity['table_name'] ?? 'A'), 0, 1)); ?>
                                     </span>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <p class="mb-0 small text-dark"><span class="fw-bold"><?php echo $activity['user_name']; ?></span> <?php echo $activity['action']; ?></p>
+                                    <p class="mb-0 small text-dark"><span class="fw-bold"><?php echo htmlspecialchars($activity['user_name'] ?? 'System'); ?></span> <?php echo htmlspecialchars($activity['action']); ?></p>
                                     <span class="small text-muted opacity-75" style="font-size: 0.7rem;">
                                         <i class="far fa-clock me-1"></i><?php echo date('h:i A', strtotime($activity['created_at'])); ?> 
-                                        &bull; <span class="badge bg-light text-dark px-2"><?php echo ucfirst($activity['module']); ?></span>
+                                        &bull; <span class="badge bg-light text-dark px-2"><?php echo ucfirst((string)($activity['table_name'] ?? 'System')); ?></span>
                                     </span>
                                 </div>
                             </li>
+
                             <?php endforeach; ?>
                         </ul>
                         <?php if (empty($recentActivity)): ?>

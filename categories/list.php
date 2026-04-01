@@ -1,10 +1,7 @@
 <?php
-$pageTitle = 'Category List';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
-$stmt = $pdo->query("SELECT * FROM categories WHERE status=1 ORDER BY id DESC");
-$categories = $stmt->fetchAll();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
@@ -22,12 +19,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
         } else {
             $stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
             $stmt->execute([$name, $desc]);
+            session_start();
             $_SESSION['message'] = 'Category added successfully!';
             header('Location: list.php');
             exit();
         }
     }
 }
+
+$pageTitle = 'Category List';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$stmt = $pdo->query("SELECT * FROM categories WHERE status=1 ORDER BY id DESC");
+$categories = $stmt->fetchAll();
 ?>
 
 <div class="page-wrapper">
@@ -41,6 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
                 <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Category</a>
             </div>
         </div>
+
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
+
+        <?php if ($error): ?>
+            <div class="alert alert-danger mt-2"><?php echo $error; ?></div>
+        <?php endif; ?>
 
         <div class="card">
             <div class="card-body">

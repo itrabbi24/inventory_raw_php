@@ -1,13 +1,10 @@
 <?php
-$pageTitle = 'Brand List';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
-
-$stmt = $pdo->query("SELECT * FROM brands WHERE status=1 ORDER BY id DESC");
-$brands = $stmt->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_brand'])) {
     $name = sanitize($_POST['name'] ?? '');
@@ -27,6 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_brand'])) {
         }
     }
 }
+
+$pageTitle = 'Brand List';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$stmt = $pdo->query("SELECT * FROM brands WHERE status=1 ORDER BY id DESC");
+$brands = $stmt->fetchAll();
 ?>
 
 <div class="page-wrapper">

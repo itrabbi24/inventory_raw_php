@@ -1,10 +1,7 @@
 <?php
-$pageTitle = 'Add Product';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
-$categories = $pdo->query("SELECT * FROM categories WHERE status=1")->fetchAll();
-$brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 $message = '';
 $error = '';
@@ -59,6 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$pageTitle = 'Add Product';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
+
+$categories = $pdo->query("SELECT * FROM categories WHERE status=1")->fetchAll();
+$brands     = $pdo->query("SELECT * FROM brands WHERE status=1")->fetchAll();
 ?>
 
 <div class="page-wrapper">

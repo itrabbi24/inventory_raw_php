@@ -52,6 +52,21 @@ $pageTitle = $pageTitle ?? 'Dashboard';
     <div id="global-loader">
         <div class="whirly-loader"> </div>
     </div>
+    <script>
+        // Fail-safe loader removal
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('global-loader');
+            if (loader) {
+                setTimeout(function() {
+                    loader.style.transition = 'opacity 0.5s ease';
+                    loader.style.opacity = '0';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                    }, 500);
+                }, 200);
+            }
+        });
+    </script>
     <!-- Main Wrapper -->
     <div class="main-wrapper">
 

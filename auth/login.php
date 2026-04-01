@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role']    = $user['role'];
             $_SESSION['email']   = $user['email'];
             
-            // require_once __DIR__ . '/../includes/functions.php'; // now included at the top
+            require_once __DIR__ . '/../includes/functions.php';
             logActivity($pdo, $user['id'], 'User logged in', 'auth', $user['id']);
             
             header('Location: ' . BASE_URL . 'dashboard/index.php');
@@ -54,82 +54,238 @@ $settings = getSettings($pdo);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-        <meta name="description" content="Inventory Management System Login">
-        <meta name="author" content="Antigravity">
-        <title>Login - <?php echo $settings['company_name']; ?></title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="description" content="Inventory Management System - Modern Login">
+    <title>Login - <?php echo $settings['company_name']; ?></title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/bootstrap.min.css">
+    
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/fontawesome/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #FF9F43 0%, #1B2850 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-logo img {
+            max-width: 160px;
+            margin-bottom: 25px;
+        }
+        .login-header h3 {
+            font-weight: 800;
+            color: #1B2850;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            color: #637381;
+            font-size: 15px;
+            margin-bottom: 35px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 22px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #1B2850;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: block;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-wrapper i.prefix-icon {
+            position: absolute;
+            left: 18px;
+            color: #FF9F43;
+            font-size: 18px;
+        }
+        .form-control {
+            padding-left: 50px;
+            height: 54px;
+            border-radius: 14px;
+            border: 2px solid #F0F0F0;
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #1B2850;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            background: #FFF;
+            border-color: #FF9F43;
+            box-shadow: 0 0 0 4px rgba(255, 159, 67, 0.15);
+        }
+        .pass-toggle {
+            position: absolute;
+            right: 18px;
+            color: #A0AEC0;
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        .pass-toggle:hover {
+            color: #FF9F43;
+        }
+        .login-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .login-footer a {
+            color: #FF9F43;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-login {
+            background: #FF9F43;
+            border: none;
+            color: #fff;
+            width: 100%;
+            height: 54px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(255, 159, 67, 0.4);
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            background: #FE820E;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 159, 67, 0.5);
+            color: #fff;
+        }
+        .alert {
+            border-radius: 14px;
+            border: none;
+            padding: 15px;
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .demo-box {
+            background: #F8FAFC;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 35px;
+            border: 1px dashed #E2E8F0;
+        }
+        .demo-box p {
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #64748B;
+        }
+        .demo-box p strong {
+            color: #475569;
+        }
+        .dev-info {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #94A3B8;
+        }
+        .form-check-input:checked {
+            background-color: #FF9F43;
+            border-color: #FF9F43;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="<?php echo BASE_URL; ?>assets/img/logo.png" alt="Logo">
+        </div>
         
-        <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png">
-        
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/bootstrap.min.css">
-        
-        <!-- Fontawesome CSS -->
-        <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/fontawesome/css/all.min.css">
-        <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/plugins/fontawesome/css/fontawesome.min.css">
-        
-        <!-- Main CSS -->
-        <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
-    </head>
-    <body class="account-page">
-        <!-- Main Wrapper -->
-        <div class="main-wrapper">
-            <div class="account-content">
-                <div class="login-wrapper">
-                    <div class="login-content">
-                        <div class="login-userset">
-                            <div class="login-logo text-center">
-                                <img src="<?php echo BASE_URL; ?>assets/img/logo.png" alt="img" class="mb-3">
-                                <h3>Inventory System</h3>
-                            </div>
-                            <div class="login-userheading">
-                                <h3>Sign In</h3>
-                                <h4>Please login to your account</h4>
-                            </div>
-                            <?php if ($error): ?>
-                                <div class="alert alert-danger"><?php echo $error; ?></div>
-                            <?php endif; ?>
-                            <form action="login.php" method="POST">
-                                <div class="form-login">
-                                    <label>Email</label>
-                                    <div class="form-addons">
-                                        <input type="text" name="email" placeholder="Enter your email address" required>
-                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/mail.svg" alt="img">
-                                    </div>
-                                </div>
-                                <div class="form-login">
-                                    <label>Password</label>
-                                    <div class="form-addons">
-                                        <input type="password" name="password" placeholder="Enter your password" required>
-                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/lock.svg" alt="img">
-                                    </div>
-                                </div>
-                                <div class="form-login">
-                                    <button class="btn btn-login" type="submit">Sign In</button>
-                                </div>
-                            </form>
-                            <div class="login-social">
-                                <p class="no-acc">Demo Credential: argrabby@gmail.com / admin123</p>
-                                <p class="mt-2 text-center text-muted">Developed by <strong>ARG RABBI</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="login-img">
-                        <img src="<?php echo BASE_URL; ?>assets/img/login.jpg" alt="img">
-                    </div>
+        <div class="login-header">
+            <h3>Welcome Back</h3>
+            <p>Please log in to your account to continue</p>
+        </div>
+
+        <?php if ($error): ?>
+            <div class="alert alert-danger fade show">
+                <i class="fas fa-times-circle me-2"></i> <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="login.php" method="POST">
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope prefix-icon"></i>
+                    <input type="email" name="email" class="form-control" placeholder="admin@example.com" required>
                 </div>
             </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock prefix-icon"></i>
+                    <input type="password" name="password" class="form-control pass-input" placeholder="Your Password" required>
+                    <i class="fas fa-eye-slash pass-toggle toggle-password"></i>
+                </div>
+            </div>
+
+            <div class="login-footer">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remMe">
+                    <label class="form-check-label text-muted" for="remMe">Remember Me</label>
+                </div>
+                <a href="javascript:void(0);">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-login">Sign In Now</button>
+        </form>
+
+        <div class="demo-box">
+            <p><strong>Demo Access:</strong></p>
+            <p>argrabby@gmail.com / admin123</p>
         </div>
-        <!-- /Main Wrapper -->
-        
-        <!-- jQuery -->
-        <script src="<?php echo BASE_URL; ?>assets/js/jquery-3.6.0.min.js"></script>
-        <!-- Bootstrap Core JS -->
-        <script src="<?php echo BASE_URL; ?>assets/js/bootstrap.bundle.min.js"></script>
-        <!-- Custom JS -->
-        <script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
-    </body>
+
+        <div class="dev-info">
+            Inventory Management System | Developed by <strong>ARG RABBI</strong>
+        </div>
+    </div>
+
+    <!-- jQuery & Bootstrap JS -->
+    <script src="<?php echo BASE_URL; ?>assets/js/jquery-3.6.0.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>assets/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS (For Password Toggle) -->
+    <script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
+</body>
 </html>

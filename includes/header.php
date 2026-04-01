@@ -76,13 +76,13 @@ $pageTitle = $pageTitle ?? 'Dashboard';
 
                 <li class="nav-item dropdown has-arrow main-drop">
                     <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
-                        <span class="user-img"><img src="<?php echo BASE_URL; ?>assets/img/profiles/avator1.jpg" alt="">
+                        <span class="user-img"><img src="<?php echo BASE_URL; ?>assets/img/profiles/user-avatar.png" alt="">
                         <span class="status online"></span></span>
                     </a>
                     <div class="dropdown-menu menu-drop-user">
                         <div class="profilename">
                             <div class="profileset">
-                                <span class="user-img"><img src="<?php echo BASE_URL; ?>assets/img/profiles/avator1.jpg" alt="">
+                                <span class="user-img"><img src="<?php echo BASE_URL; ?>assets/img/profiles/user-avatar.png" alt="">
                                 <span class="status online"></span></span>
                                 <div class="profilesets">
                                     <h6><?php echo $_SESSION['name']; ?></h6>

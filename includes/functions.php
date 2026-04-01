@@ -201,22 +201,20 @@ function checkGitUpdates($pdo, $settings) {
         $repo_url = "https://github.com/itrabbi24/inventory_raw_php.git";
         $remote = $settings['git_remote_name'] ?? 'origin';
         
-        @shell_exec("git init 2>/dev/null");
-        @shell_exec("git remote add {$remote} {$repo_url} 2>/dev/null");
-        @shell_exec("git fetch {$remote} 2>/dev/null");
-        // We return true here because we definitely need to pull the first time to sync
+        @shell_exec("git init 2>nul");
+        @shell_exec("git remote add {$remote} {$repo_url} 2>nul");
+        @shell_exec("git fetch {$remote} 2>nul");
         return true;
     }
 
-    $remote = $settings['git_remote_name'] ?? 'origin';
-    $branch = $settings['git_branch_name'] ?? 'main';
-    
-    // 2. Fetch remote carefully
-    @shell_exec("git fetch {$remote} {$branch} 2>/dev/null");
+
+    // 2. Fetch remote carefully (suppress stderr Windows style)
+    @shell_exec("git fetch {$remote} 2>nul");
     
     // 3. Compare local and remote commits
-    $local_output = @shell_exec("git rev-parse HEAD 2>/dev/null");
-    $remote_output = @shell_exec("git rev-parse {$remote}/{$branch} 2>/dev/null");
+    $local_output = @shell_exec("git rev-parse HEAD 2>nul");
+    $remote_output = @shell_exec("git rev-parse {$remote}/{$branch} 2>nul");
+
 
     $local_hash  = $local_output ? trim((string)$local_output) : '';
     $remote_hash = $remote_output ? trim((string)$remote_output) : '';
@@ -232,17 +230,18 @@ function checkGitUpdates($pdo, $settings) {
  * Execute Git pull to update the codebase
  */
 function applyGitUpdates($pdo, $settings) {
-    if (!($settings['auto_update_enabled'] ?? 0)) return "Auto-update disabled";
+    if (!($settings['auto_update_enabled'] ?? '0') === '1') return "Auto-update disabled";
     
     $remote = $settings['git_remote_name'] ?? 'origin';
     $branch = $settings['git_branch_name'] ?? 'main';
     
-    // Force pull with output capture to avoid null errors
+    // Force pull with output capture to avoid null errors (Windows compatible)
     $resetData = @shell_exec("git reset --hard {$remote}/{$branch} 2>&1") ?: "Reset data: [No Output]";
     $pullData = @shell_exec("git pull {$remote} {$branch} 2>&1") ?: "Pull data: [No Output]";
     
     return $resetData . "\n" . $pullData;
 }
+
 
 
 

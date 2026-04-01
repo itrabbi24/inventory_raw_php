@@ -3,7 +3,14 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'inventory_db');
-define('BASE_URL', 'http://localhost/inventory/');
+// Dynamic BASE_URL calculation
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+$doc_root = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
+$current_dir = str_replace('\\', '/', __DIR__);
+$path = str_replace($doc_root, '', $current_dir);
+$base_path = str_replace('/config', '', $path);
+define('BASE_URL', $protocol . $host . $base_path . '/');
 define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 
 try {

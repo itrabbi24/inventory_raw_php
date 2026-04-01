@@ -5,7 +5,22 @@ require_once __DIR__ . '/functions.php';
 
 $settings = getSettings($pdo);
 $pageTitle = $pageTitle ?? 'Dashboard';
+
+// Throttled Auto-Update Check (Every 30 minutes)
+if (($settings['auto_update_enabled'] ?? '0') === '1') {
+    $now = time();
+    $last_check = $_SESSION['last_update_check'] ?? 0;
+    
+    if (($now - $last_check) > 1800) { // 1800 seconds = 30 minutes
+        $_SESSION['last_update_check'] = $now;
+        if (checkGitUpdates($pdo, $settings)) {
+            echo "<script>window.location='".BASE_URL."auth/update_progress.php';</script>";
+            exit();
+        }
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

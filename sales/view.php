@@ -152,18 +152,147 @@ $items = $stmt_items->fetchAll();
                         <p class="text-muted small">Generated on <?php echo date('d-m-Y H:i:s'); ?> | Developed by <strong>ARG RABBI</strong></p>
                     </div>
                 </div>
+
+                <!-- Payment History (Hidden in Print) -->
+                <div class="payment-history-section mt-5 no-print border-top pt-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold text-dark m-0"><i class="fas fa-history me-2 text-warning"></i>Payment Installments</h4>
+                        <?php if($sale['due_amount'] > 0): ?>
+                        <button class="btn btn-warning fw-bold text-white px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                            <i class="fas fa-plus-circle me-2"></i>ADD INSTALLMENT
+                        </button>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php
+                    $stmt_p = $pdo->prepare("SELECT * FROM sale_payments WHERE sale_id = ? ORDER BY id DESC");
+                    $stmt_p->execute([$id]);
+                    $payments = $stmt_p->fetchAll();
+                    ?>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover border">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 px-4">Date</th>
+                                    <th class="py-3 px-4">Method</th>
+                                    <th class="py-3 px-4">Amount</th>
+                                    <th class="py-3 px-4">Note</th>
+                                    <th class="py-3 px-4">Received By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if(empty($payments)): ?>
+                                <tr><td colspan="5" class="text-center py-4 text-muted">No installment payments recorded yet.</td></tr>
+                                <?php else: foreach($payments as $p): ?>
+                                <tr>
+                                    <td class="px-4 py-3"><?php echo date('d M, Y', strtotime($p['payment_date'])); ?></td>
+                                    <td class="px-4"><span class="badge bg-light text-dark border px-3 py-2 text-uppercase small"><?php echo $p['method']; ?></span></td>
+                                    <td class="px-4 fw-bold text-success">৳ <?php echo number_format($p['amount'], 2); ?></td>
+                                    <td class="px-4 text-muted small"><?php echo $p['note'] ?: '-'; ?></td>
+                                    <td class="px-4 small">Staff ID: <?php echo $p['created_by']; ?></td>
+                                </tr>
+                                <?php endforeach; endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 </div>
 
+<!-- Add Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Record Installment Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addPaymentForm">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="sale_id" value="<?php echo $id; ?>">
+                    
+                    <div class="bg-light p-3 rounded-4 mb-4 d-flex justify-content-between">
+                        <div>
+                            <p class="mb-0 text-muted small fw-bold">TOTAL DUE</p>
+                            <h4 class="fw-bold text-danger mb-0">৳ <?php echo number_format($sale['due_amount'], 2); ?></h4>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-0 text-muted small fw-bold">INVOICE</p>
+                            <h5 class="fw-bold m-0">#<?php echo $sale['invoice_no']; ?></h5>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="text-muted small fw-bold mb-2">PAYMENT DATE</label>
+                        <input type="date" name="payment_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required shadow-sm>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="text-muted small fw-bold mb-2">AMOUNT TO PAY (৳)</label>
+                        <input type="number" name="amount" class="form-control form-control-lg border-warning fw-bold h-auto py-3" max="<?php echo $sale['due_amount'] + 0.01; ?>" step="0.01" required placeholder="0.00">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="text-muted small fw-bold mb-2">PAYMENT METHOD</label>
+                        <select name="method" class="select" required>
+                            <option value="cash">Cash</option>
+                            <option value="bkash">bKash</option>
+                            <option value="nagad">Nagad</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label class="text-muted small fw-bold mb-2">NOTE / REFERENCE (OPTIONAL)</label>
+                        <textarea name="note" class="form-control" rows="2" placeholder="e.g. 2nd Installment"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning px-5 fw-bold text-white shadow-sm">
+                        <i class="fas fa-check-circle me-1"></i> SUBMIT PAYMENT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$('#addPaymentForm').on('submit', function(e) {
+    e.preventDefault();
+    let btn = $(this).find('button[type="submit"]');
+    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
+    
+    $.ajax({
+        url: '<?php echo BASE_URL; ?>ajax/add_sale_payment.php',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(res) {
+            if(res.success) {
+                Swal.fire({ icon: 'success', title: 'Payment Recorded', text: res.message, showConfirmButton: false, timer: 1500 })
+                .then(() => location.reload());
+            } else {
+                Swal.fire('Error', res.message, 'error');
+                btn.prop('disabled', false).html('<i class="fas fa-check-circle me-1"></i> SUBMIT PAYMENT');
+            }
+        }
+    });
+});
+</script>
+
 <style>
 @media print {
-    .sidebar, .header, .page-header, .btn, footer { display: none !important; }
+    .sidebar, .header, .page-header, .btn, footer, .no-print, .payment-history-section { display: none !important; }
     .page-wrapper { margin: 0 !important; padding: 0 !important; }
-    .card { border: none !important; }
+    .card { border: none !important; box-shadow: none !important; }
+    .card-body { padding: 0 !important; }
 }
 </style>
+
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

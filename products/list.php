@@ -97,6 +97,9 @@ $products = $stmt->fetchAll();
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><span class="badges <?php echo ($product['current_stock'] <= $product['min_stock_alert']) ? 'bg-lightred' : 'bg-lightgreen'; ?>"><?php echo $product['current_stock']; ?></span></td>
                                 <td>
+                                    <a class="me-3" href="<?php echo BASE_URL; ?>products/barcode.php?id=<?php echo $product['id']; ?>" title="Print Barcodes">
+                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/barcode.svg" alt="img">
+                                    </a>
                                     <a class="me-3" href="javascript:void(0);" onclick="adjustStock(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', <?php echo $product['current_stock']; ?>)" title="Adjust Stock">
                                         <img src="<?php echo BASE_URL; ?>assets/img/icons/edit-5.svg" alt="img">
                                     </a>

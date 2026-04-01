@@ -277,8 +277,16 @@ $settings = getSettings($pdo);
         </form>
 
         <div class="demo-box">
-            <p><strong>Demo Access:</strong></p>
-            <p>argrabby@gmail.com / admin123</p>
+            <p><strong>Quick Demo Access:</strong></p>
+            <div class="d-flex justify-content-center gap-2 mt-2">
+                <button type="button" class="btn btn-outline-warning btn-sm fw-bold px-3 py-1" onclick="fillDemo('argrabby@gmail.com', 'admin123')">
+                    <i class="fas fa-user-shield me-1"></i> Admin
+                </button>
+                <button type="button" class="btn btn-outline-info btn-sm fw-bold px-3 py-1" onclick="fillDemo('salesman@example.com', 'sales123')">
+                    <i class="fas fa-shopping-cart me-1"></i> Sales
+                </button>
+            </div>
+            <p class="mt-2 small text-muted">argrabby@gmail.com / admin123</p>
         </div>
 
         <div class="dev-info">
@@ -291,5 +299,17 @@ $settings = getSettings($pdo);
     <script src="<?php echo BASE_URL; ?>assets/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS (For Password Toggle) -->
     <script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
+    <script>
+        function fillDemo(email, pass) {
+            $('input[name="email"]').val(email);
+            $('input[name="password"]').val(pass);
+            
+            // Subtle animation for visual feedback
+            $('.login-card').addClass('animate__animated animate__pulse');
+            setTimeout(() => {
+                $('.login-card').removeClass('animate__animated animate__pulse');
+            }, 1000);
+        }
+    </script>
 </body>
 </html>

@@ -10,10 +10,15 @@ require_once __DIR__ . '/../includes/sidebar.php';
 // Fetch apply update if requested
 if (isset($_GET['action']) && $_GET['action'] == 'apply') {
     $result = applyGitUpdates($pdo, $settings);
-    $_SESSION['message'] = "Update Processed: " . nl2br($result);
+    if ($result['status'] === true) {
+        $_SESSION['message'] = '<div class="alert alert-success mt-3 py-3 shadow-sm border-0"><i class="fas fa-check-circle me-2"></i><strong>Success!</strong> ' . $result['msg'] . '</div>';
+    } else {
+        $_SESSION['message'] = '<div class="alert alert-danger mt-3 py-3 shadow-sm border-0"><i class="fas fa-exclamation-triangle me-2"></i><strong>Update Interrupted!</strong> ' . $result['msg'] . '</div>';
+    }
     header('Location: updates.php');
     exit();
 }
+
 
 // Fetch update history from database
 $stmt = $pdo->query("SELECT * FROM system_updates ORDER BY applied_at DESC");
@@ -37,11 +42,11 @@ $current_hash = @shell_exec("git rev-parse HEAD 2>nul") ?: 'N/A';
         </div>
 
         <?php if (isset($_SESSION['message'])): ?>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <strong>Log:</strong> <pre class="small m-0 mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></pre>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="mb-4">
+                <?php echo $_SESSION['message']; unset($_SESSION['message']); ?>
             </div>
         <?php endif; ?>
+
 
         <div class="row">
             <!-- Current Version Info -->

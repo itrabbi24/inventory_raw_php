@@ -196,25 +196,36 @@ function runMigrations(PDO $pdo): array {
 function checkGitUpdates($pdo, $settings) {
     if (!($settings['auto_update_enabled'] ?? 0)) return false;
     
+    // 1. Check if this is a Git repository. If not, initialize it.
+    if (!is_dir(dirname(__DIR__) . '/.git')) {
+        $repo_url = "https://github.com/itrabbi24/inventory_raw_php.git";
+        $remote = $settings['git_remote_name'] ?? 'origin';
+        
+        @shell_exec("git init 2>/dev/null");
+        @shell_exec("git remote add {$remote} {$repo_url} 2>/dev/null");
+        @shell_exec("git fetch {$remote} 2>/dev/null");
+        // We return true here because we definitely need to pull the first time to sync
+        return true;
+    }
+
     $remote = $settings['git_remote_name'] ?? 'origin';
     $branch = $settings['git_branch_name'] ?? 'main';
     
-    // 1. Fetch remote carefully (suppress stderr)
+    // 2. Fetch remote carefully
     @shell_exec("git fetch {$remote} {$branch} 2>/dev/null");
     
-    // 2. Compare local and remote commits
+    // 3. Compare local and remote commits
     $local_output = @shell_exec("git rev-parse HEAD 2>/dev/null");
     $remote_output = @shell_exec("git rev-parse {$remote}/{$branch} 2>/dev/null");
 
     $local_hash  = $local_output ? trim((string)$local_output) : '';
     $remote_hash = $remote_output ? trim((string)$remote_output) : '';
     
-    // If we couldn't get a hash for either, assume no update (to avoid infinite loops or errors)
     if (empty($local_hash) || empty($remote_hash)) return false;
 
-    // Return true if remote hash is different from local hash
     return ($local_hash !== $remote_hash);
 }
+
 
 
 /**

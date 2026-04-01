@@ -41,6 +41,12 @@ $pageTitle = $pageTitle ?? 'Dashboard';
 
     <!-- Charts JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Core Scripts Load Early -->
+    <script src="<?php echo BASE_URL; ?>assets/js/jquery-3.6.0.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>assets/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>assets/plugins/select2/js/select2.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>assets/plugins/sweetalert/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div id="global-loader">

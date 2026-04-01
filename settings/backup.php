@@ -53,7 +53,7 @@ if (isset($_GET['download'])) {
             <div class="card-body p-5 text-center">
                 <div class="mb-4">
                     <div class="bg-light d-inline-flex p-4 rounded-circle mb-3">
-                        <img src="<?php echo BASE_URL; ?>assets/img/icons/database.svg" alt="db" style="width: 64px; height: 64px;">
+                        <img src="<?php echo BASE_URL; ?>assets/img/icons/dash1.svg" alt="db" style="width: 64px; height: 64px;">
                     </div>
                     <h3 class="fw-bold">Database Safeguard</h3>
                     <p class="text-muted mx-auto" style="max-width: 500px;">

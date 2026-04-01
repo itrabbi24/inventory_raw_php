@@ -3,15 +3,15 @@ $pageTitle = 'Brand List';
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
+$message = '';
+$error = '';
+
 $stmt = $pdo->query("SELECT * FROM brands WHERE status=1 ORDER BY id DESC");
 $brands = $stmt->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_brand'])) {
     $name = sanitize($_POST['name'] ?? '');
     $desc = sanitize($_POST['description'] ?? '');
-
-    $message = '';
-    $error = '';
     if (!empty($name)) {
         // Duplicate Check
         $check = $pdo->prepare("SELECT id FROM brands WHERE name = ? AND status = 1");

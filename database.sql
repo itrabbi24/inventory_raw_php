@@ -294,8 +294,10 @@ CREATE TABLE `activity_log` (
   `action` TEXT NOT NULL,
   `table_name` VARCHAR(100),
   `record_id` INT UNSIGNED,
-  `ip_address` VARCHAR(45),
+  `ip_address` VARCHAR(100),
+  `user_agent` TEXT,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

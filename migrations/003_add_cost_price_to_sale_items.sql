@@ -1,0 +1,2 @@
+ALTER TABLE sale_items 
+ADD COLUMN cost_price DECIMAL(15,2) NOT NULL DEFAULT 0.00 AFTER product_id;

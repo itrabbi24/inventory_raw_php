@@ -143,7 +143,9 @@ CREATE TABLE `sale_items` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `sale_id` INT UNSIGNED NOT NULL,
   `product_id` INT UNSIGNED NOT NULL,
+  `cost_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `serial_number` VARCHAR(100),
+
   `warranty_months` INT NOT NULL DEFAULT 0,
   `quantity` INT NOT NULL DEFAULT 1,
   `unit_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,

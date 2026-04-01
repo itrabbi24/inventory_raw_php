@@ -199,16 +199,23 @@ function checkGitUpdates($pdo, $settings) {
     $remote = $settings['git_remote_name'] ?? 'origin';
     $branch = $settings['git_branch_name'] ?? 'main';
     
-    // 1. Fetch remote but don't pull
-    shell_exec("git fetch {$remote} {$branch}");
+    // 1. Fetch remote carefully (suppress stderr)
+    @shell_exec("git fetch {$remote} {$branch} 2>/dev/null");
     
     // 2. Compare local and remote commits
-    $local_hash  = trim(shell_exec("git rev-parse HEAD"));
-    $remote_hash = trim(shell_exec("git rev-parse {$remote}/{$branch}"));
+    $local_output = @shell_exec("git rev-parse HEAD 2>/dev/null");
+    $remote_output = @shell_exec("git rev-parse {$remote}/{$branch} 2>/dev/null");
+
+    $local_hash  = $local_output ? trim((string)$local_output) : '';
+    $remote_hash = $remote_output ? trim((string)$remote_output) : '';
     
+    // If we couldn't get a hash for either, assume no update (to avoid infinite loops or errors)
+    if (empty($local_hash) || empty($remote_hash)) return false;
+
     // Return true if remote hash is different from local hash
     return ($local_hash !== $remote_hash);
 }
+
 
 /**
  * Execute Git pull to update the codebase
@@ -219,11 +226,12 @@ function applyGitUpdates($pdo, $settings) {
     $remote = $settings['git_remote_name'] ?? 'origin';
     $branch = $settings['git_branch_name'] ?? 'main';
     
-    // Force pull (discarding local changes if any)
-    $output = shell_exec("git reset --hard {$remote}/{$branch} 2>&1");
-    $output .= "\n" . shell_exec("git pull {$remote} {$branch} 2>&1");
+    // Force pull with output capture to avoid null errors
+    $resetData = @shell_exec("git reset --hard {$remote}/{$branch} 2>&1") ?: "Reset data: [No Output]";
+    $pullData = @shell_exec("git pull {$remote} {$branch} 2>&1") ?: "Pull data: [No Output]";
     
-    return $output;
+    return $resetData . "\n" . $pullData;
 }
+
 
 

@@ -94,12 +94,12 @@ $settings = getSettings($pdo);
             overflow: hidden;
         }
         .login-card {
-            background: rgba(255, 255, 255, 0.98);
+            background: #fff;
             border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            padding: 50px 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 35px 35px;
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
             text-align: center;
             animation: fadeIn 0.8s ease-out;
         }
@@ -119,8 +119,8 @@ $settings = getSettings($pdo);
         }
         .login-header p {
             color: #637381;
-            font-size: 15px;
-            margin-bottom: 35px;
+            font-size: 14px;
+            margin-bottom: 25px;
         }
         .form-group {
             text-align: left;
@@ -212,9 +212,9 @@ $settings = getSettings($pdo);
         }
         .demo-box {
             background: #F8FAFC;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 35px;
+            border-radius: 14px;
+            padding: 15px;
+            margin-top: 20px;
             border: 1px dashed #E2E8F0;
         }
         .demo-box p {
@@ -283,23 +283,22 @@ $settings = getSettings($pdo);
             <button type="submit" class="btn btn-login">Sign In Now</button>
         </form>
 
-        <div class="demo-box mt-4">
-            <p class="mb-3 small fw-bold text-muted text-uppercase">Quick Demo Login</p>
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-                <button type="button" class="btn btn-outline-warning btn-sm fw-bold px-3 py-1" onclick="fillDemo('argrabby@gmail.com', 'admin123')" title="Administrator">
+        <div class="demo-box mt-3">
+            <p class="mb-2 small fw-bold text-muted text-uppercase">Quick Demo Login</p>
+            <div class="d-flex flex-wrap justify-content-center gap-1">
+                <button type="button" class="btn btn-outline-warning btn-sm px-2 py-1" style="font-size: 11px;" onclick="fillDemo('argrabby@gmail.com', 'admin123')" title="Administrator">
                     <i class="fas fa-user-shield me-1"></i> Admin
                 </button>
-                <button type="button" class="btn btn-outline-info btn-sm fw-bold px-3 py-1" onclick="fillDemo('salesman@example.com', 'sales123')" title="Sales Person">
+                <button type="button" class="btn btn-outline-info btn-sm px-2 py-1" style="font-size: 11px;" onclick="fillDemo('salesman@example.com', 'sales123')" title="Sales Person">
                     <i class="fas fa-shopping-cart me-1"></i> Sales
                 </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 py-1" onclick="fillDemo('stock@example.com', 'stock123')" title="Stock Manager">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-1" style="font-size: 11px;" onclick="fillDemo('stock@example.com', 'stock123')" title="Stock Manager">
                     <i class="fas fa-boxes me-1"></i> Stock
                 </button>
-                <button type="button" class="btn btn-outline-success btn-sm fw-bold px-3 py-1" onclick="fillDemo('accountant@example.com', 'acc123')" title="Accountant">
+                <button type="button" class="btn btn-outline-success btn-sm px-2 py-1" style="font-size: 11px;" onclick="fillDemo('accountant@example.com', 'acc123')" title="Accountant">
                     <i class="fas fa-file-invoice-dollar me-1"></i> Account
                 </button>
             </div>
-            <p class="mt-3 small text-muted border-top pt-2">Default: <span class="text-dark fw-bold">argrabby@gmail.com / admin123</span></p>
         </div>
 
         <div class="dev-info">

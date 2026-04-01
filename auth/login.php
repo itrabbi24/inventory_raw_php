@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
 session_start();
 
 // If already logged in, redirect to dashboard
@@ -38,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role']    = $user['role'];
             $_SESSION['email']   = $user['email'];
             
-            require_once __DIR__ . '/../includes/functions.php';
+            // require_once __DIR__ . '/../includes/functions.php'; // now included at the top
             logActivity($pdo, $user['id'], 'User logged in', 'auth', $user['id']);
             
             header('Location: ' . BASE_URL . 'dashboard/index.php');

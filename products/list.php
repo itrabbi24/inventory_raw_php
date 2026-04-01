@@ -87,7 +87,19 @@ $products = $stmt->fetchAll();
                                 </td>
                                 <td class="productimgname">
                                     <a href="javascript:void(0);" class="product-img">
-                                        <img src="<?php echo BASE_URL; ?>uploads/products/<?php echo $product['image'] ?: 'no-image.png'; ?>" alt="product">
+                                        <?php 
+                                        $image = $product['image'];
+                                        $image_path = 'assets/img/product/noimage.png'; // Default
+                                        
+                                        if ($image) {
+                                            if (file_exists(__DIR__ . '/../uploads/products/' . $image)) {
+                                                $image_path = 'uploads/products/' . $image;
+                                            } elseif (file_exists(__DIR__ . '/../assets/img/product/' . $image)) {
+                                                $image_path = 'assets/img/product/' . $image;
+                                            }
+                                        }
+                                        ?>
+                                        <img src="<?php echo BASE_URL . $image_path; ?>" alt="product">
                                     </a>
                                     <a href="javascript:void(0);"><?php echo $product['name']; ?></a>
                                 </td>

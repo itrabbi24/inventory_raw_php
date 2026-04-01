@@ -55,13 +55,20 @@ $pageTitle = $pageTitle ?? 'Dashboard';
             <!-- Logo -->
             <div class="header-left active">
                 <a href="<?php echo BASE_URL; ?>dashboard/index.php" class="logo">
-                    <img src="<?php echo BASE_URL; ?>assets/img/logo.png" alt="">
+                    <?php 
+                    $logo = $settings['company_logo'] ?? '';
+                    $logoPath = $logo ? BASE_URL . 'uploads/company/' . $logo : BASE_URL . 'assets/img/logo.png';
+                    ?>
+                    <img src="<?php echo $logoPath; ?>" alt="Logo">
                 </a>
                 <a href="<?php echo BASE_URL; ?>dashboard/index.php" class="logo-small">
-                    <img src="<?php echo BASE_URL; ?>assets/img/logo-small.png" alt="">
+                    <?php 
+                    $logoSmall = $settings['company_logo_small'] ?? $logo;
+                    $logoSmallPath = $logoSmall ? BASE_URL . 'uploads/company/' . $logoSmall : BASE_URL . 'assets/img/logo-small.png';
+                    ?>
+                    <img src="<?php echo $logoSmallPath; ?>" alt="Logo">
                 </a>
-                <a id="toggle_btn" href="javascript:void(0);">
-                </a>
+                <a id="toggle_btn" href="javascript:void(0);"></a>
             </div>
             <!-- /Logo -->
 

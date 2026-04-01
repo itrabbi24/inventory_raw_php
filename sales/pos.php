@@ -227,10 +227,11 @@ function renderProductGrid(products) {
     }
 
     products.forEach(p => {
+        let imgPath = p.image ? `../../assets/img/product/${p.image}` : `../../assets/img/icons/product.svg`;
         let card = `
             <div class="pos-product-card shadow-sm" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.purchase_price})">
                 <div class="img-box">
-                    <img src="../../assets/img/icons/product.svg" alt="img" width="35">
+                    <img src="${imgPath}" alt="img" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 </div>
                 <div class="name" title="${p.name}">${p.name}</div>
                 <div class="price">৳ ${parseFloat(p.purchase_price).toFixed(2)}</div>

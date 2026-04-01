@@ -12,10 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date           = sanitize($_POST['challan_date'] ?? date('Y-m-d'));
     $address        = sanitize($_POST['delivery_address'] ?? '');
     
+    $desc           = $_POST['description'] ?? [];
     $product_ids    = $_POST['product_id'] ?? [];
     $quantities     = $_POST['quantity'] ?? [];
     $serials        = $_POST['serial_number'] ?? [];
     $warranties     = $_POST['warranty'] ?? [];
+
 
     if ($customer_id > 0 && !empty($product_ids)) {
         try {
@@ -24,15 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$challan_no, $customer_id, $date, $address, $_SESSION['user_id']]);
             $challan_id = $pdo->lastInsertId();
 
-            $stmt_item = $pdo->prepare("INSERT INTO challan_items (challan_id, product_id, quantity, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?)");
+            $stmt_item = $pdo->prepare("INSERT INTO challan_items (challan_id, product_id, description, quantity, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?)");
+
             foreach ($product_ids as $index => $pid) {
                 $pid = (int)$pid;
                 $qty = (int)$quantities[$index];
                 $sn  = sanitize($serials[$index]);
                 $wr  = (int)$warranties[$index];
                 if ($pid > 0 && $qty > 0) {
-                    $stmt_item->execute([$challan_id, $pid, $qty, $sn, $wr]);
+                    $d = sanitize($desc[$index]);
+                    $stmt_item->execute([$challan_id, $pid, $d, $qty, $sn, $wr]);
                 }
+
             }
             
             logActivity($pdo, $_SESSION['user_id'], "New challan created: {$challan_no}", 'challan', $challan_id);
@@ -109,11 +114,13 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
                                     <thead>
                                         <tr>
                                             <th>Product Selection</th>
+                                            <th>Description</th>
                                             <th>QTY</th>
                                             <th>Serial Number</th>
                                             <th>Warranty (Months)</th>
                                             <th>Action</th>
                                         </tr>
+
                                     </thead>
                                     <tbody>
                                         <tr>
@@ -125,11 +132,13 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
                                                     <?php endforeach; ?>
                                                 </select>
                                             </td>
+                                            <td><textarea name="description[]" class="form-control" rows="1" placeholder="Optional details"></textarea></td>
                                             <td><input type="number" name="quantity[]" value="1" class="form-control"></td>
                                             <td><input type="text" name="serial_number[]" class="form-control"></td>
                                             <td><input type="number" name="warranty[]" value="0" class="form-control"></td>
-                                            <td><button type="button" class="btn btn-primary" onclick="addChallanRow()">+</button></td>
+                                            <td class="text-center"><button type="button" class="btn btn-primary" onclick="addChallanRow()"><i class="fas fa-plus"></i></button></td>
                                         </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -149,11 +158,22 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
 <script>
 function addChallanRow() {
     let table = document.getElementById('challanTable').getElementsByTagName('tbody')[0];
-    let firstRow = table.rows[0];
     let newRow = table.insertRow();
-    newRow.innerHTML = firstRow.innerHTML;
-    newRow.cells[4].innerHTML = '<button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">-</button>';
+    newRow.innerHTML = `
+        <td>
+            <select class="form-control" name="product_id[]" required>
+                <option value="">Select Product</option>
+                <?php foreach ($products as $p): ?><option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option><?php endforeach; ?>
+            </select>
+        </td>
+        <td><textarea name="description[]" class="form-control" rows="1" placeholder="Optional details"></textarea></td>
+        <td><input type="number" name="quantity[]" value="1" class="form-control"></td>
+        <td><input type="text" name="serial_number[]" class="form-control"></td>
+        <td><input type="number" name="warranty[]" value="0" class="form-control"></td>
+        <td class="text-center"><button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">-</button></td>
+    `;
 }
+
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

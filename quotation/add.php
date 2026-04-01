@@ -11,11 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $quotation_no   = sanitize($_POST['quotation_no'] ?? '');
     $date           = sanitize($_POST['quotation_date'] ?? date('Y-m-d'));
     
+    $desc           = $_POST['description'] ?? [];
     $product_ids    = $_POST['product_id'] ?? [];
     $quantities     = $_POST['quantity'] ?? [];
     $prices         = $_POST['unit_price'] ?? [];
     $serials        = $_POST['serial_number'] ?? [];
     $warranties     = $_POST['warranty'] ?? [];
+
     
     $subtotal       = (float)($_POST['subtotal'] ?? 0);
     $discount       = (float)($_POST['discount'] ?? 0);
@@ -28,7 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$quotation_no, $customer_id == 0 ? null : $customer_id, $date, $subtotal, $discount, $total_amount, $_SESSION['user_id']]);
             $quotation_id = $pdo->lastInsertId();
 
-            $stmt_item = $pdo->prepare("INSERT INTO quotation_items (quotation_id, product_id, quantity, unit_price, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt_item = $pdo->prepare("INSERT INTO quotation_items (quotation_id, product_id, description, quantity, unit_price, serial_number, warranty_months) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
             foreach ($product_ids as $index => $pid) {
                 $pid   = (int)$pid;
                 $qty   = (int)$quantities[$index];
@@ -36,8 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sn    = sanitize($serials[$index]);
                 $wr    = (int)$warranties[$index];
                 if ($pid > 0 && $qty > 0) {
-                    $stmt_item->execute([$quotation_id, $pid, $qty, $price, $sn, $wr]);
+                    $d     = sanitize($desc[$index]);
+                    $stmt_item->execute([$quotation_id, $pid, $d, $qty, $price, $sn, $wr]);
                 }
+
             }
             
             logActivity($pdo, $_SESSION['user_id'], "Quotation created: {$quotation_no}", 'quotations', $quotation_id);
@@ -108,6 +113,7 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
                                     <thead>
                                         <tr>
                                             <th>Product</th>
+                                            <th>Description</th>
                                             <th>Serial Number</th>
                                             <th>Warranty (Months)</th>
                                             <th>QTY</th>
@@ -115,6 +121,7 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
                                             <th>Total (৳)</th>
                                             <th>Action</th>
                                         </tr>
+
                                     </thead>
                                     <tbody>
                                         <tr>
@@ -126,13 +133,15 @@ $customers = $pdo->query("SELECT id, name FROM customers WHERE status=1 ORDER BY
                                                     <?php endforeach; ?>
                                                 </select>
                                             </td>
+                                            <td><textarea name="description[]" class="form-control" rows="1" placeholder="Optional details"></textarea></td>
                                             <td><input type="text" name="serial_number[]" class="form-control"></td>
                                             <td><input type="number" name="warranty[]" value="0" class="form-control"></td>
                                             <td><input type="number" name="quantity[]" value="1" class="form-control" oninput="calculateTotals()"></td>
                                             <td><input type="number" name="unit_price[]" value="0" class="form-control" oninput="calculateTotals()"></td>
-                                            <td class="row-total">0.00</td>
-                                            <td><button type="button" class="btn btn-primary" onclick="addRow()">+</button></td>
+                                            <td class="row-total text-end fw-bold">0.00</td>
+                                            <td class="text-center"><button type="button" class="btn btn-primary" onclick="addRow()"><i class="fas fa-plus"></i></button></td>
                                         </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -169,29 +178,32 @@ function addRow() {
                 <?php foreach ($products as $p): ?><option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option><?php endforeach; ?>
             </select>
         </td>
+        <td><textarea name="description[]" class="form-control" rows="1" placeholder="Optional details"></textarea></td>
         <td><input type="text" name="serial_number[]" class="form-control"></td>
         <td><input type="number" name="warranty[]" value="0" class="form-control"></td>
         <td><input type="number" name="quantity[]" value="1" class="form-control" oninput="calculateTotals()"></td>
         <td><input type="number" name="unit_price[]" value="0" class="form-control" oninput="calculateTotals()"></td>
-        <td class="row-total">0.00</td>
-        <td><button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); calculateTotals();">-</button></td>
+        <td class="row-total text-end fw-bold">0.00</td>
+        <td class="text-center"><button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); calculateTotals();"><i class="fas fa-minus"></i></button></td>
     `;
 }
+
 
 function calculateTotals() {
     let rows = document.getElementById('quotationTable').getElementsByTagName('tbody')[0].rows;
     let subtotal = 0;
     for(let row of rows) {
-        let qty = row.cells[3].getElementsByTagName('input')[0].value;
-        let price = row.cells[4].getElementsByTagName('input')[0].value;
-        let total = qty * price;
-        row.cells[5].innerText = total.toFixed(2);
+        let qty = row.cells[4].getElementsByTagName('input')[0].value;
+        let price = row.cells[5].getElementsByTagName('input')[0].value;
+        let total = (parseFloat(qty) || 0) * (parseFloat(price) || 0);
+        row.cells[6].innerText = total.toFixed(2);
         subtotal += total;
     }
-    document.getElementById('subtotal').value = subtotal;
-    let disc = document.getElementById('discount').value;
+    document.getElementById('subtotal').value = subtotal.toFixed(2);
+    let disc = parseFloat(document.getElementById('discount').value) || 0;
     document.getElementById('grand_total').value = (subtotal - disc).toFixed(2);
 }
+
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

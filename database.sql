@@ -160,7 +160,9 @@ CREATE TABLE `sale_items` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `sale_id` INT UNSIGNED NOT NULL,
   `product_id` INT UNSIGNED NOT NULL,
+  `description` TEXT,
   `cost_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+
   `serial_number` VARCHAR(100),
 
   `warranty_months` INT NOT NULL DEFAULT 0,
@@ -205,7 +207,9 @@ CREATE TABLE `challan_items` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `challan_id` INT UNSIGNED NOT NULL,
   `product_id` INT UNSIGNED NOT NULL,
+  `description` TEXT,
   `serial_number` VARCHAR(100),
+
   `quantity` INT NOT NULL DEFAULT 1,
   `warranty_months` INT NOT NULL DEFAULT 0,
   FOREIGN KEY (`challan_id`) REFERENCES `challan`(`id`) ON DELETE CASCADE,
@@ -236,7 +240,9 @@ CREATE TABLE `quotation_items` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `quotation_id` INT UNSIGNED NOT NULL,
   `product_id` INT UNSIGNED NOT NULL,
+  `description` TEXT,
   `serial_number` VARCHAR(100),
+
   `quantity` INT NOT NULL DEFAULT 1,
   `warranty_months` INT NOT NULL DEFAULT 0,
   `unit_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,

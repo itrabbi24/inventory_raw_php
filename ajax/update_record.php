@@ -23,7 +23,15 @@ try {
         $desc = sanitize($_POST['description'] ?? '');
         $stmt = $pdo->prepare("UPDATE `{$table}` SET name = ?, description = ? WHERE id = ?");
         $stmt->execute([$name, $desc, $id]);
+    } elseif ($table == 'customers' || $table == 'vendors') {
+        $name    = sanitize($_POST['name'] ?? '');
+        $phone   = sanitize($_POST['phone'] ?? '');
+        $email   = sanitize($_POST['email'] ?? '');
+        $address = sanitize($_POST['address'] ?? '');
+        $stmt = $pdo->prepare("UPDATE `{$table}` SET name = ?, phone = ?, email = ?, address = ? WHERE id = ?");
+        $stmt->execute([$name, $phone, $email, $address, $id]);
     }
+
     
     logActivity($pdo, $_SESSION['user_id'], "Updated record in {$table}", $table, $id);
     echo json_encode(['status' => 'success']);

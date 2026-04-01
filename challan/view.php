@@ -67,10 +67,16 @@ $items = $stmt_items->fetchAll();
                                 <?php $i=1; foreach($items as $item): ?>
                                 <tr>
                                     <td><?php echo $i++; ?></td>
-                                    <td><?php echo $item['product_name']; ?></td>
+                                    <td>
+                                        <strong><?php echo $item['product_name']; ?></strong>
+                                        <?php if(!empty($item['description'])): ?>
+                                            <br><small class="text-muted"><?php echo nl2br($item['description']); ?></small>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo $item['quantity']; ?></td>
                                     <td><?php echo $item['serial_number']; ?></td>
                                 </tr>
+
                                 <?php endforeach; ?>
                             </tbody>
                         </table>

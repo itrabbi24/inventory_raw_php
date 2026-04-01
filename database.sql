@@ -291,10 +291,10 @@ CREATE TABLE `expenses` (
 CREATE TABLE `activity_log` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT UNSIGNED,
-  `action` VARCHAR(200) NOT NULL,
-  `module` VARCHAR(100),
-  `reference_id` INT UNSIGNED,
-  `ip_address` VARCHAR(50),
+  `action` TEXT NOT NULL,
+  `table_name` VARCHAR(100),
+  `record_id` INT UNSIGNED,
+  `ip_address` VARCHAR(45),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

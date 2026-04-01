@@ -151,3 +151,35 @@ if (!function_exists('numberToWords')) {
     }
 }
 
+/**
+ * Handle File Uploads (Secure)
+ */
+if (!function_exists('uploadFile')) {
+    function uploadFile($file, $target_dir) {
+        if (!isset($file['name']) || empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) {
+            return false;
+        }
+
+        $target_dir = rtrim($target_dir, '/') . '/';
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+
+        $file_name = preg_replace("/[^a-zA-Z0-9.\-_]/", "", basename($file["name"]));
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $new_file_name = uniqid() . '_' . time() . '.' . $file_ext;
+        $target_file = $target_dir . $new_file_name;
+
+        // Allow certain file formats
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if(!in_array($file_ext, $allowed)) return false;
+
+        if (move_uploaded_file($file["tmp_name"], $target_file)) {
+            return $new_file_name;
+        }
+
+        return false;
+    }
+}
+
+

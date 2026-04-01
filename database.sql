@@ -108,6 +108,8 @@ CREATE TABLE `stock_in` (
   `purchase_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `shipping_charge` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   `total_price` DECIMAL(15,2) GENERATED ALWAYS AS ((`quantity` * `purchase_price`) + `shipping_charge`) STORED,
+  `paid_amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `due_amount` DECIMAL(15,2) GENERATED ALWAYS AS (`total_price` - `paid_amount`) STORED,
   `purchase_date` DATE NOT NULL,
   `notes` TEXT,
   `created_by` INT UNSIGNED,
@@ -116,6 +118,21 @@ CREATE TABLE `stock_in` (
   FOREIGN KEY (`vendor_id`) REFERENCES `vendors`(`id`) ON DELETE SET NULL,
   FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 8.1 purchase_payments
+CREATE TABLE `purchase_payments` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `stock_in_id` INT UNSIGNED NOT NULL,
+  `payment_date` DATE NOT NULL,
+  `amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `method` ENUM('cash','bkash','nagad','bank','credit') NOT NULL DEFAULT 'cash',
+  `note` TEXT,
+  `created_by` INT UNSIGNED,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`stock_in_id`) REFERENCES `stock_in`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- 9. sales
 CREATE TABLE `sales` (

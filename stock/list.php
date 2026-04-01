@@ -52,10 +52,14 @@ $stocks = $stmt->fetchAll();
                                 <td><?php echo formatCurrency($stk['purchase_price']); ?></td>
                                 <td><?php echo formatCurrency($stk['total_price']); ?></td>
                                 <td>
-                                    <a class="confirm-text" href="javascript:void(0);" onclick="deleteStock(<?php echo $stk['id']; ?>)">
+                                    <a class="me-3" href="view.php?id=<?php echo $stk['id']; ?>" title="View Voucher">
+                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/eye.svg" alt="img">
+                                    </a>
+                                    <a class="confirm-text" href="javascript:void(0);" onclick="deleteStock(<?php echo $stk['id']; ?>)" title="Delete Record">
                                         <img src="<?php echo BASE_URL; ?>assets/img/icons/delete.svg" alt="img">
                                     </a>
                                 </td>
+
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

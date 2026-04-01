@@ -42,8 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../includes/functions.php';
             logActivity($pdo, $user['id'], 'User logged in', 'auth', $user['id']);
             
-            // Run any pending migrations automatically upon login
+            // 1. Run database migrations
             runMigrations($pdo);
+
+            // 2. Check for Git Updates if enabled
+            $settings = getSettings($pdo);
+            if (checkGitUpdates($pdo, $settings)) {
+                header("Location: " . BASE_URL . "auth/update_progress.php");
+                exit();
+            }
             
             header('Location: ' . BASE_URL . 'dashboard/index.php');
 

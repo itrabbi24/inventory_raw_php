@@ -190,3 +190,40 @@ function runMigrations(PDO $pdo): array {
     return $results;
 }
 
+/**
+ * Check for updates in the remote Git repository
+ */
+function checkGitUpdates($pdo, $settings) {
+    if (!($settings['auto_update_enabled'] ?? 0)) return false;
+    
+    $remote = $settings['git_remote_name'] ?? 'origin';
+    $branch = $settings['git_branch_name'] ?? 'main';
+    
+    // 1. Fetch remote but don't pull
+    shell_exec("git fetch {$remote} {$branch}");
+    
+    // 2. Compare local and remote commits
+    $local_hash  = trim(shell_exec("git rev-parse HEAD"));
+    $remote_hash = trim(shell_exec("git rev-parse {$remote}/{$branch}"));
+    
+    // Return true if remote hash is different from local hash
+    return ($local_hash !== $remote_hash);
+}
+
+/**
+ * Execute Git pull to update the codebase
+ */
+function applyGitUpdates($pdo, $settings) {
+    if (!($settings['auto_update_enabled'] ?? 0)) return "Auto-update disabled";
+    
+    $remote = $settings['git_remote_name'] ?? 'origin';
+    $branch = $settings['git_branch_name'] ?? 'main';
+    
+    // Force pull (discarding local changes if any)
+    $output = shell_exec("git reset --hard {$remote}/{$branch} 2>&1");
+    $output .= "\n" . shell_exec("git pull {$remote} {$branch} 2>&1");
+    
+    return $output;
+}
+
+

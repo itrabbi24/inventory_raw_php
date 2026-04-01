@@ -8,7 +8,12 @@ $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Regular settings update
     if (isset($_POST['settings'])) {
+        // Handle checkbox (if missing, set to 0)
+        if (!isset($_POST['settings']['auto_update_enabled'])) {
+            $_POST['settings']['auto_update_enabled'] = '0';
+        }
         foreach ($_POST['settings'] as $key => $value) {
+
             $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = ?");
             $stmt->execute([sanitize($value), $key]);
         }
@@ -105,6 +110,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="text" name="settings[invoice_prefix]" value="<?php echo $settings['invoice_prefix']; ?>" class="form-control">
                             </div>
                         </div>
+
+                        <div class="col-lg-12 mb-4 mt-4">
+                            <h5 class="fw-bold text-danger border-bottom pb-2"><i class="fas fa-sync-alt me-2"></i>Software Maintenance</h5>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group mb-4">
+                                <label class="text-muted small fw-bold">AUTO-UPDATE SYSTEM</label>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" name="settings[auto_update_enabled]" value="1" id="autoUpd" <?php echo ($settings['auto_update_enabled'] == '1') ? 'checked' : ''; ?>>
+                                    <label class="form-check-label text-muted" for="autoUpd">Check & Pull Updates from GitHub</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group mb-3">
+                                <label class="text-muted small fw-bold">GIT REMOTE NAME</label>
+                                <input type="text" name="settings[git_remote_name]" value="<?php echo $settings['git_remote_name'] ?: 'origin'; ?>" class="form-control" placeholder="origin">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group mb-3">
+                                <label class="text-muted small fw-bold">GIT BRANCH NAME</label>
+                                <input type="text" name="settings[git_branch_name]" value="<?php echo $settings['git_branch_name'] ?: 'main'; ?>" class="form-control" placeholder="main">
+                            </div>
+                        </div>
+
                         
                         <div class="col-lg-12 mt-4 text-end">
                             <button type="submit" class="btn btn-warning px-5 py-2 text-white fw-bold shadow-sm">

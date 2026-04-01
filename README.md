@@ -34,7 +34,34 @@ A professional electronics shop management system built with raw PHP, MySQL, and
 - **Email**: `argrabby@gmail.com`
 - **Password**: `admin123`
 
+## 🔄 Automated Update System Setup
+This system can automatically pull the latest changes from this GitHub repository to your local server once enabled.
+
+### **1. Git Configuration** (One-time)
+To allow PHP to run `git pull` from the web server, you must run these commands in your project folder:
+```bash
+# Allow Git to be run from the web-server user
+git config --global --add safe.directory path/to/your/project/folder
+
+# (Optional) Store your credentials if it's a private repo
+git config --global credential.helper store
+```
+
+### **2. Enabling Auto-Update**
+1.  Log in as **Admin**.
+2.  Go to **Settings > General Settings**.
+3.  Scroll down to **Software Maintenance**.
+4.  Toggle **Check & Pull Updates from GitHub** to ON.
+5.  Set `Remote Name` (usually `origin`) and `Branch` (usually `main`).
+
+### **3. How it Works**
+- Every time an Admin or authorized user logs in, the system checks if your local code matches the remote GitHub version.
+- If a new update is found, a **Progress Screen** will appear automatically.
+- It performs a `git reset --hard` followed by a `git pull`, ensuring your codebase is 100% updated.
+- It also runs any new **Database Migrations** automatically.
+
 ## 📜 Credits
+
 Developed with ❤️ by **ARG RABBI**.
 
 ---

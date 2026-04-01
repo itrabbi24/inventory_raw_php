@@ -5,8 +5,9 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
 $id = (int)($_GET['id'] ?? 0);
 $stmt = $pdo->prepare("SELECT ch.*, c.name as customer_name, c.phone, c.address FROM challan ch LEFT JOIN customers c ON ch.customer_id = c.id WHERE ch.id = ?");
-$stmt->execute([id]);
+$stmt->execute([$id]);
 $challan = $stmt->fetch();
+
 
 if (!$challan) {
     echo "<script>window.location='list.php';</script>";

@@ -10,11 +10,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_brand'])) {
     $name = sanitize($_POST['name'] ?? '');
     $desc = sanitize($_POST['description'] ?? '');
 
+    $message = '';
+    $error = '';
     if (!empty($name)) {
-        $stmt = $pdo->prepare("INSERT INTO brands (name, description) VALUES (?, ?)");
-        $stmt->execute([$name, $desc]);
-        header('Location: list.php');
-        exit();
+        // Duplicate Check
+        $check = $pdo->prepare("SELECT id FROM brands WHERE name = ? AND status = 1");
+        $check->execute([$name]);
+        if ($check->rowCount() > 0) {
+            $error = "Brand '{$name}' already exists!";
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO brands (name, description) VALUES (?, ?)");
+            $stmt->execute([$name, $desc]);
+            $_SESSION['message'] = 'Brand added successfully!';
+            header('Location: list.php');
+            exit();
+        }
     }
 }
 ?>
@@ -30,6 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_brand'])) {
                 <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addBrandModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Brand</a>
             </div>
         </div>
+
+        <?php 
+        $msg = $_SESSION['message'] ?? $message;
+        if ($msg) { echo "<div class='alert alert-success'>$msg</div>"; unset($_SESSION['message']); }
+        if ($error) { echo "<div class='alert alert-danger'>$error</div>"; }
+        ?>
 
         <div class="card">
             <div class="card-body">

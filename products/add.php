@@ -29,6 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($name)) {
         $error = 'Product name is required';
+    } else {
+        // Duplicate Check
+        $check = $pdo->prepare("SELECT id FROM products WHERE name = ? AND model = ? AND status = 1");
+        $check->execute([$name, $model]);
+        if ($check->rowCount() > 0) {
+            $error = "Product '{$name}' with model '{$model}' already exists!";
+        }
     }
 
     if (!$error) {
@@ -43,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             logActivity($pdo, $_SESSION['user_id'], 'Added new product', 'products', $product_id);
             $pdo->commit();
-            $message = 'Product added successfully!';
+            $_SESSION['message'] = 'Product added successfully!';
+            header('Location: list.php');
+            exit();
         } catch (PDOException $e) {
             $pdo->rollBack();
             $error = 'Database error: ' . $e->getMessage();

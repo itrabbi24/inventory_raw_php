@@ -14,11 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
     $desc = sanitize($_POST['description'] ?? '');
 
     if (!empty($name)) {
-        $stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
-        $stmt->execute([$name, $desc]);
-        $message = 'Category added successfully!';
-        header('Location: list.php');
-        exit();
+        // Duplicate Check
+        $check = $pdo->prepare("SELECT id FROM categories WHERE name = ? AND status = 1");
+        $check->execute([$name]);
+        if ($check->rowCount() > 0) {
+            $error = "Category '{$name}' already exists!";
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
+            $stmt->execute([$name, $desc]);
+            $_SESSION['message'] = 'Category added successfully!';
+            header('Location: list.php');
+            exit();
+        }
     }
 }
 ?>

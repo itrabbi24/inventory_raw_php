@@ -67,6 +67,25 @@ foreach($catData as $cd) {
     $catValues[] = (int)$cd['sales_count'];
 }
 
+// Bestselling Products (Top 5)
+$topProducts = $pdo->query("
+    SELECT p.id, p.name, p.image, SUM(si.quantity) as total_sold, p.current_stock
+    FROM products p
+    JOIN sale_items si ON p.id = si.product_id
+    GROUP BY p.id
+    ORDER BY total_sold DESC
+    LIMIT 5
+")->fetchAll();
+
+// Recent System Activity (Top 5)
+$recentActivity = $pdo->query("
+    SELECT al.*, u.name as user_name, u.role
+    FROM activity_log al
+    LEFT JOIN users u ON al.user_id = u.id
+    ORDER BY al.id DESC
+    LIMIT 5
+")->fetchAll();
+
 // Tables data
 $recentSales = $pdo->query("SELECT s.*, c.name as customer_name FROM sales s LEFT JOIN customers c ON s.customer_id = c.id ORDER BY s.id DESC LIMIT 5")->fetchAll();
 $lowStock = $pdo->query("SELECT * FROM products WHERE current_stock <= min_stock_alert AND status=1 LIMIT 5")->fetchAll();
@@ -169,29 +188,50 @@ $lowStock = $pdo->query("SELECT * FROM products WHERE current_stock <= min_stock
                 </div>
             </div>
             
-            <!-- Low Stock -->
-            <div class="col-lg-5 col-sm-12 col-12 d-flex">
+        <div class="row mt-4">
+            <!-- Bestselling Products -->
+            <div class="col-lg-6 col-md-12 d-flex">
                 <div class="card flex-fill shadow-sm border-0">
-                    <div class="card-header pb-0 bg-transparent border-0">
-                        <h5 class="card-title mb-0 fw-bold text-dark">Stock Alert</h5>
+                    <div class="card-header pb-0 bg-transparent border-0 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold">Top Bestselling Products</h5>
+                        <i class="feather-trending-up text-orange"></i>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="border-0">Item</th>
-                                        <th class="border-0">Stock</th>
-                                        <th class="border-0">State</th>
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th class="border-0 small text-muted">PRODUCT</th>
+                                        <th class="border-0 small text-muted">SOLD</th>
+                                        <th class="border-0 small text-muted text-end">STOCK</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($lowStock as $ls): ?>
-                                        <tr>
-                                            <td class="text-muted fw-semi-bold"><?php echo $ls['name']; ?></td>
-                                            <td><span class="badge bg-soft-danger text-danger fs-6"><?php echo $ls['current_stock']; ?></span></td>
-                                            <td><span class="text-danger small fw-bold">Refill Needed</span></td>
-                                        </tr>
+                                    <?php foreach ($topProducts as $tp): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="productimgname p-0">
+                                                <a href="javascript:void(0);" class="product-img ms-0" style="width: 40px; height: 40px;">
+                                                    <?php 
+                                                    $img = $tp['image'];
+                                                    $ip = 'assets/img/product/noimage.png';
+                                                    if ($img) {
+                                                        if (file_exists(__DIR__ . '/../uploads/products/' . $img)) $ip = 'uploads/products/' . $img;
+                                                        elseif (file_exists(__DIR__ . '/../assets/img/product/' . $img)) $ip = 'assets/img/product/' . $img;
+                                                    }
+                                                    ?>
+                                                    <img src="<?php echo BASE_URL . $ip; ?>" alt="img" class="rounded">
+                                                </a>
+                                                <a href="javascript:void(0);" class="ms-2 small fw-bold text-dark"><?php echo $tp['name']; ?></a>
+                                            </div>
+                                        </td>
+                                        <td><span class="fw-bold"><?php echo $tp['total_sold']; ?></span></td>
+                                        <td class="text-end">
+                                            <span class="badge <?php echo ($tp['current_stock'] <= 5) ? 'bg-lightred' : 'bg-lightgreen'; ?>">
+                                                <?php echo $tp['current_stock']; ?>
+                                            </span>
+                                        </td>
+                                    </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -199,9 +239,46 @@ $lowStock = $pdo->query("SELECT * FROM products WHERE current_stock <= min_stock
                     </div>
                 </div>
             </div>
+
+            <!-- Recent Activity Log -->
+            <div class="col-lg-6 col-md-12 d-flex">
+                <div class="card flex-fill shadow-sm border-0">
+                    <div class="card-header pb-0 bg-transparent border-0">
+                        <h5 class="card-title mb-0 fw-bold">System Activity Feed</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="notification-list list-unstyled ps-0">
+                            <?php foreach ($recentActivity as $activity): ?>
+                            <li class="d-flex align-items-center mb-3 pb-3 border-bottom-dashed">
+                                <div class="avatar-sm me-3">
+                                    <span class="avatar-title rounded-circle bg-soft-warning text-warning p-2 small">
+                                        <?php echo strtoupper(substr($activity['module'], 0, 1)); ?>
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 small text-dark"><span class="fw-bold"><?php echo $activity['user_name']; ?></span> <?php echo $activity['action']; ?></p>
+                                    <span class="small text-muted opacity-75" style="font-size: 0.7rem;">
+                                        <i class="far fa-clock me-1"></i><?php echo date('h:i A', strtotime($activity['created_at'])); ?> 
+                                        &bull; <span class="badge bg-light text-dark px-2"><?php echo ucfirst($activity['module']); ?></span>
+                                    </span>
+                                </div>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <?php if (empty($recentActivity)): ?>
+                            <div class="text-center p-4 text-muted small">No recent activities logged</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .border-bottom-dashed { border-bottom: 1px dashed #eee; }
+    .bg-soft-warning { background-color: rgba(255, 159, 67, 0.1); }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

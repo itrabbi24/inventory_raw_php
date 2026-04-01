@@ -27,6 +27,10 @@ $products = $stmt->fetchAll();
             </div>
         </div>
 
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-2"><?php echo $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
+
         <!-- /product list -->
         <div class="card">
             <div class="card-body">

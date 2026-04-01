@@ -42,7 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../includes/functions.php';
             logActivity($pdo, $user['id'], 'User logged in', 'auth', $user['id']);
             
+            // Run any pending migrations automatically upon login
+            runMigrations($pdo);
+            
             header('Location: ' . BASE_URL . 'dashboard/index.php');
+
             exit();
         } else {
             $error = 'Invalid email or password.';

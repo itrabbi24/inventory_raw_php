@@ -34,6 +34,7 @@ CREATE TABLE `categories` (
 CREATE TABLE `brands` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
+  `description` TEXT,
   `logo` VARCHAR(255),
   `status` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -261,6 +262,13 @@ CREATE TABLE `settings` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `key_name` VARCHAR(100) NOT NULL UNIQUE,
   `key_value` TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 20. migrations
+CREATE TABLE IF NOT EXISTS `migrations` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `migration_name` VARCHAR(255) NOT NULL UNIQUE,
+  `executed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES

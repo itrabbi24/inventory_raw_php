@@ -129,3 +129,64 @@ function uploadFile(array $file, string $subFolder, array $allowedExt = ['jpg','
     }
     return $filename;
 }
+
+/**
+ * Run pending database migrations from the migrations directory.
+ * Scan for .sql files, execute them, and store the filename in migrations table.
+ */
+function runMigrations(PDO $pdo): array {
+    $results = [];
+    
+    // 1. Ensure migrations table exists
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `migrations` (
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `migration_name` VARCHAR(255) NOT NULL UNIQUE,
+        `executed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $migrationPath = __DIR__ . '/../migrations/';
+    if (!is_dir($migrationPath)) {
+        mkdir($migrationPath, 0755, true);
+    }
+
+    // 2. Scan migrations directory
+    $files = glob($migrationPath . '*.sql');
+    if (!$files) return [];
+    sort($files); // Run in order
+
+    // 3. Get already executed ones
+    $stmt = $pdo->query("SELECT migration_name FROM migrations");
+    $executed = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    foreach ($files as $file) {
+        $name = basename($file);
+        if (!in_array($name, $executed)) {
+            try {
+                $sqlSnippet = file_get_contents($file);
+                if (!empty(trim($sqlSnippet))) {
+                    // Split into multiple statements if necessary
+                    $queries = array_filter(array_map('trim', explode(';', $sqlSnippet)));
+                    foreach ($queries as $q) {
+                        $pdo->exec($q);
+                    }
+                }
+                // Mark as executed
+                $stmtExec = $pdo->prepare("INSERT INTO migrations (migration_name) VALUES (?)");
+                $stmtExec->execute([$name]);
+                $results[] = "Success: " . $name;
+            } catch (PDOException $e) {
+                // If it's a minor error (e.g. column already exists), still mark it as executed
+                if (stripos($e->getMessage(), 'Duplicate column name') !== false ||
+                    stripos($e->getMessage(), 'Already exists') !== false) {
+                     $stmtExec = $pdo->prepare("INSERT INTO migrations (migration_name) VALUES (?)");
+                     $stmtExec->execute([$name]);
+                     $results[] = "Skipped (already applied): " . $name;
+                } else {
+                    $results[] = "Error in " . $name . ": " . $e->getMessage();
+                }
+            }
+        }
+    }
+    return $results;
+}
+

@@ -136,6 +136,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
+                        <div class="col-lg-12 mt-2">
+                             <div class="alert alert-light border border-dashed p-3 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-dark">Manual System Update</h6>
+                                    <p class="text-muted small mb-0">Forces a check for new code regardless of the 30-minute auto-check interval.</p>
+                                </div>
+                                <a href="<?php echo BASE_URL; ?>auth/update_progress.php?force=1" class="btn btn-outline-danger fw-bold px-4 shadow-sm">
+                                    <i class="fas fa-arrow-alt-circle-up me-2"></i>CHECK & UPDATE NOW
+                                </a>
+                             </div>
+                        </div>
+
+
                         
                         <div class="col-lg-12 mt-4 text-end">
                             <button type="submit" class="btn btn-warning px-5 py-2 text-white fw-bold shadow-sm">

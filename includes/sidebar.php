@@ -110,6 +110,7 @@ $current_page = $_SERVER['PHP_SELF'];
                                 <?php endif; ?>
                                 <?php if (hasPermission('settings')): ?>
                                 <li><a href="<?php echo BASE_URL; ?>settings/general.php" class="<?php echo (strpos($current_page, 'settings/general.php') !== false) ? 'active' : ''; ?>">General Settings</a></li>
+                                <li><a href="<?php echo BASE_URL; ?>settings/backup.php" class="<?php echo (strpos($current_page, 'settings/backup.php') !== false) ? 'active' : ''; ?>">Backup & Restore</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>

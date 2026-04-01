@@ -75,6 +75,43 @@ $pageTitle = $pageTitle ?? 'Dashboard';
 
             <!-- Header Menu -->
             <ul class="nav user-menu">
+                <?php
+                // Get low stock alert count
+                $lowStockStmt = $pdo->query("SELECT COUNT(*) FROM products WHERE status = 1 AND current_stock <= min_stock_alert");
+                $lowStockCount = $lowStockStmt->fetchColumn();
+                $lowStockItems = $pdo->query("SELECT name, current_stock FROM products WHERE status = 1 AND current_stock <= min_stock_alert ORDER BY current_stock ASC LIMIT 5")->fetchAll();
+                ?>
+                <li class="nav-item dropdown">
+                    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <img src="<?php echo BASE_URL; ?>assets/img/icons/notification-bing.svg" alt="img">
+                        <?php if ($lowStockCount > 0): ?>
+                            <span class="badge rounded-pill bg-danger" style="position: absolute; top: 10px; right: 5px; font-size: 10px;"><?php echo $lowStockCount; ?></span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="dropdown-menu notifications">
+                        <div class="topnav-dropdown-header">
+                            <span class="notification-title">Low Stock Alerts (<?php echo $lowStockCount; ?>)</span>
+                        </div>
+                        <div class="noti-content">
+                            <ul class="notification-list">
+                                <?php foreach ($lowStockItems as $lsi): ?>
+                                    <li class="notification-message">
+                                        <a href="<?php echo BASE_URL; ?>products/list.php">
+                                            <div class="media d-flex">
+                                                <div class="media-body flex-grow-1">
+                                                    <p class="noti-details"><span class="noti-title"><?php echo $lsi['name']; ?></span> is low on stock! (Remaining: <span class="text-danger fw-bold"><?php echo $lsi['current_stock']; ?></span>)</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="topnav-dropdown-footer">
+                            <a href="<?php echo BASE_URL; ?>products/list.php">View all Alerts</a>
+                        </div>
+                    </div>
+                </li>
 
                 <li class="nav-item dropdown has-arrow main-drop">
                     <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">

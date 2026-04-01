@@ -1,5 +1,10 @@
 # Inventory Management System (Raw PHP & MySQL)
 
+<p align="center">
+  <img src="assets/img/screenshots/dashboard.png" width="45%" alt="Dashboard Preview">
+  <img src="assets/img/screenshots/login.png" width="45%" alt="Login Preview">
+</p>
+
 A professional electronics shop management system built with raw PHP, MySQL, and modern frontend technologies. Optimized for performance and high information density.
 
 ## 🚀 Features

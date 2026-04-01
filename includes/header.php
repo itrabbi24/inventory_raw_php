@@ -39,6 +39,8 @@ $pageTitle = $pageTitle ?? 'Dashboard';
     <!-- Main CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
 
+    <!-- Charts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div id="global-loader">

@@ -1,15 +1,15 @@
 <?php
-$pageTitle = 'Depositor Transactions';
+$pageTitle = 'Deposit Transactions';
 require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../includes/sidebar.php';
 
-$stmt = $pdo->query("SELECT dt.*, d.name as depositor_name FROM depositor_transactions dt LEFT JOIN depositors d ON dt.depositor_id = d.id ORDER BY dt.id DESC");
+$stmt = $pdo->query("SELECT dt.*, d.name as account_name FROM depositor_transactions dt LEFT JOIN depositors d ON dt.depositor_id = d.id ORDER BY dt.id DESC");
 $transactions = $stmt->fetchAll();
 
-$depositors = $pdo->query("SELECT * FROM depositors WHERE status=1")->fetchAll();
+$deposit_accounts = $pdo->query("SELECT * FROM depositors WHERE status=1")->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
-    $dep_id = (int)($_POST['depositor_id'] ?? 0);
+    $dep_id = (int)($_POST['deposit_account_id'] ?? 0);
     $amount = (float)($_POST['amount'] ?? 0);
     $type   = sanitize($_POST['type'] ?? 'deposit');
     $date   = sanitize($_POST['transaction_date'] ?? date('Y-m-d'));
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
     <div class="content">
         <div class="page-header">
             <div class="page-title">
-                <h4>Depositor Transactions</h4>
+                <h4>Deposit Transactions</h4>
                 <h6>Track deposits & withdrawals</h6>
             </div>
             <div class="page-btn">
@@ -41,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
                 <div class="table-responsive">
                     <table class="table datatable">
                         <thead>
-                            <tr><th>Date</th><th>Name</th><th>Amount (৳)</th><th>Type</th><th>Notes</th><th>Action</th></tr>
+                            <tr><th>Date</th><th>Deposit Account</th><th>Amount (৳)</th><th>Type</th><th>Notes</th><th>Action</th></tr>
                         </thead>
                         <tbody>
                             <?php foreach ($transactions as $tr): ?>
                             <tr>
                                 <td><?php echo $tr['transaction_date']; ?></td>
-                                <td><?php echo $tr['depositor_name']; ?></td>
+                                <td><?php echo $tr['account_name']; ?></td>
                                 <td><?php echo formatCurrency($tr['amount']); ?></td>
                                 <td><span class="badges <?php echo ($tr['type'] == 'deposit') ? 'bg-lightgreen' : 'bg-lightred'; ?>"><?php echo ucfirst($tr['type']); ?></span></td>
                                 <td><?php echo $tr['notes']; ?></td>
@@ -73,10 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_transaction'])) {
             <div class="modal-header"><h5 class="modal-title">New Transaction</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <form action="list.php" method="POST">
                 <div class="modal-body">
-                    <div class="form-group"><label>Select Depositor</label>
-                        <select name="depositor_id" class="select" required>
-                            <option value="">Choose Name</option>
-                            <?php foreach ($depositors as $d): ?><option value="<?php echo $d['id']; ?>"><?php echo $d['name']; ?></option><?php endforeach; ?>
+                    <div class="form-group"><label>Select Account</label>
+                        <select name="deposit_account_id" class="select" required>
+                            <option value="">Choose Account</option>
+                            <?php foreach ($deposit_accounts as $d): ?><option value="<?php echo $d['id']; ?>"><?php echo $d['name']; ?></option><?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group"><label>Amount (৳)</label><input type="number" name="amount" step="0.01" class="form-control" required></div>

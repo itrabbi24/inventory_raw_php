@@ -106,36 +106,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-lg-12 col-sm-12 col-12">
-                            <div class="form-group">
+                    <div class="row align-items-end mb-3">
+                        <div class="col-lg-10 col-sm-10 col-10">
+                            <div class="form-group mb-0">
                                 <label>Search & Selection Product</label>
-                                <div class="input-group">
-                                    <select id="productSelect" class="form-control select">
-                                        <option value="">Choose Product</option>
-                                        <?php foreach ($products as $p): ?>
-                                            <option value="<?php echo $p['id']; ?>" data-name="<?php echo $p['name']; ?>" data-stock="<?php echo $p['current_stock']; ?>">
-                                                <?php echo $p['name']; ?> (Stock: <?php echo $p['current_stock']; ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <button type="button" class="btn btn-primary" onclick="addProductRow()">Add to Invoice</button>
-                                </div>
+                                <select id="productSelect" class="form-control select">
+                                    <option value="">Choose Product</option>
+                                    <?php foreach ($products as $p): ?>
+                                        <option value="<?php echo $p['id']; ?>" data-name="<?php echo $p['name']; ?>" data-stock="<?php echo $p['current_stock']; ?>">
+                                            <?php echo $p['name']; ?> (Stock: <?php echo $p['current_stock']; ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-2">
+                            <button type="button" class="btn btn-submit w-100 h-100" onclick="addProductRow()">
+                                <i class="fas fa-plus me-1"></i> Add
+                            </button>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="salesTable">
-                                    <thead>
+                                <table class="table table-hover table-bordered" id="salesTable">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <th>Product Name</th>
-                                            <th>QTY</th>
-                                            <th>Price (৳)</th>
-                                            <th>Total (৳)</th>
-                                            <th>Action</th>
+                                            <th style="width: 30%;">Product Name</th>
+                                            <th style="width: 15%;">Serial No</th>
+                                            <th style="width: 10%;">Warranty (M)</th>
+                                            <th style="width: 10%;">QTY</th>
+                                            <th style="width: 15%;">Unit Price (৳)</th>
+                                            <th style="width: 15%;">Total (৳)</th>
+                                            <th style="width: 5%;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -147,39 +151,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     
                     <div class="row mt-4">
-                        <div class="col-lg-6 col-sm-12 col-12"></div>
-                        <div class="col-lg-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label>Subtotal</label>
-                                <input type="number" id="subtotal" name="subtotal" value="0" class="form-control" readonly>
+                        <div class="col-lg-8 col-sm-12"></div>
+                        <div class="col-lg-4 col-sm-12">
+                            <div class="total-order">
+                                <ul>
+                                    <li>
+                                        <h4>Subtotal</h4>
+                                        <h5><input type="number" id="subtotal" name="subtotal" value="0" class="form-control text-end border-0 bg-transparent py-0" readonly></h5>
+                                    </li>
+                                    <li>
+                                        <h4>Discount</h4>
+                                        <h5><input type="number" id="discount" name="discount" value="0" class="form-control text-end border-0 bg-transparent py-0" oninput="calculateTotals()"></h5>
+                                    </li>
+                                    <li class="total">
+                                        <h4>Grand Total</h4>
+                                        <h5><input type="number" id="grand_total" name="grand_total" value="0" class="form-control text-end border-0 bg-transparent py-1 fw-bold" readonly style="font-size: 1.25rem;"></h5>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="form-group">
-                                <label>Discount</label>
-                                <input type="number" id="discount" name="discount" value="0" class="form-control" oninput="calculateTotals()">
+                            
+                            <hr>
+                            
+                            <div class="form-group row align-items-center">
+                                <label class="col-lg-4 col-form-label">Paid Amount</label>
+                                <div class="col-lg-8">
+                                    <input type="number" name="paid_amount" value="0" class="form-control">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Grand Total</label>
-                                <input type="number" id="grand_total" name="grand_total" value="0" class="form-control" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>Paid Amount</label>
-                                <input type="number" name="paid_amount" value="0" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Method</label>
-                                <select class="select" name="payment_method">
-                                    <option value="cash">Cash</option>
-                                    <option value="bkash">bKash</option>
-                                    <option value="nagad">Nagad</option>
-                                    <option value="bank">Bank Transfer</option>
-                                </select>
+                            <div class="form-group row align-items-center">
+                                <label class="col-lg-4 col-form-label">Method</label>
+                                <div class="col-lg-8">
+                                    <select class="select" name="payment_method">
+                                        <option value="cash">Cash</option>
+                                        <option value="bkash">bKash</option>
+                                        <option value="nagad">Nagad</option>
+                                        <option value="bank">Bank Transfer</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-lg-12">
-                        <button type="submit" class="btn btn-submit me-2">Finalize Sale</button>
-                        <a href="list.php" class="btn btn-cancel">Cancel</a>
+                    <div class="col-lg-12 text-end mt-4">
+                        <button type="submit" class="btn btn-submit me-2 px-5">Finalize Sale</button>
+                        <a href="list.php" class="btn btn-cancel px-4">Cancel</a>
                     </div>
                 </div>
             </div>
@@ -195,23 +210,40 @@ function addProductRow() {
     
     let option = select.options[select.selectedIndex];
     let name = option.getAttribute('data-name');
-    let stock = option.getAttribute('data-stock');
+    let stock = parseInt(option.getAttribute('data-stock'));
     
+    // Check if product already exists in table
+    let existingIds = document.getElementsByName('product_id[]');
+    for(let i=0; i<existingIds.length; i++) {
+        if(existingIds[i].value === pid) {
+            alert('Product already added to list');
+            return;
+        }
+    }
+
     let table = document.getElementById('salesTable').getElementsByTagName('tbody')[0];
     let newRow = table.insertRow();
     
     newRow.innerHTML = `
-        <td>
-            ${name}
+        <td class="align-middle">
+            <strong>${name}</strong>
             <input type="hidden" name="product_id[]" value="${pid}">
         </td>
-        <td><input type="text" name="serial_number[]" class="form-control" placeholder="Serial"></td>
-        <td><input type="number" name="warranty[]" value="0" class="form-control" placeholder="Months"></td>
-        <td><input type="number" name="quantity[]" value="1" min="1" max="${stock}" class="form-control" oninput="calculateTotals()"></td>
-        <td><input type="number" name="unit_price[]" value="0" class="form-control" oninput="calculateTotals()"></td>
-        <td class="row-total">0.00</td>
-        <td><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove(); calculateTotals();">X</button></td>
+        <td><input type="text" name="serial_number[]" class="form-control form-control-sm" placeholder="Serial"></td>
+        <td><input type="number" name="warranty[]" value="0" min="0" class="form-control form-control-sm text-center"></td>
+        <td><input type="number" name="quantity[]" value="1" min="1" max="${stock}" class="form-control form-control-sm text-center" oninput="calculateTotals()"></td>
+        <td><input type="number" name="unit_price[]" value="0" step="0.01" class="form-control form-control-sm text-end" oninput="calculateTotals()"></td>
+        <td class="row-total text-end align-middle fw-bold">0.00</td>
+        <td class="text-center align-middle">
+            <a href="javascript:void(0);" onclick="this.parentElement.parentElement.remove(); calculateTotals();" class="text-danger">
+                <i class="fas fa-trash-alt"></i>
+            </a>
+        </td>
     `;
+    
+    calculateTotals();
+    // Reset select
+    // select.value = ""; // optional
 }
 
 function calculateTotals() {
@@ -219,16 +251,17 @@ function calculateTotals() {
     let subtotal = 0;
     
     for(let row of rows) {
-        let qty = row.cells[3].getElementsByTagName('input')[0].value;
-        let price = row.cells[4].getElementsByTagName('input')[0].value;
+        let qty = parseFloat(row.cells[3].getElementsByTagName('input')[0].value) || 0;
+        let price = parseFloat(row.cells[4].getElementsByTagName('input')[0].value) || 0;
         let total = qty * price;
         row.cells[5].innerText = total.toFixed(2);
         subtotal += total;
     }
     
-    document.getElementById('subtotal').value = subtotal;
-    let discount = document.getElementById('discount').value;
-    document.getElementById('grand_total').value = (subtotal - discount).toFixed(2);
+    document.getElementById('subtotal').value = subtotal.toFixed(2);
+    let discount = parseFloat(document.getElementById('discount').value) || 0;
+    let grand_total = subtotal - discount;
+    document.getElementById('grand_total').value = grand_total.toFixed(2);
 }
 </script>
 

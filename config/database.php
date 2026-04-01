@@ -37,7 +37,7 @@ define('ROLE_PERMISSIONS', [
     'sales'      => ['superadmin', 'admin', 'salesman'],
     'challan'    => ['superadmin', 'admin', 'salesman'],
     'quotation'  => ['superadmin', 'admin', 'salesman'],
-    'depositor'  => ['superadmin', 'admin', 'accountant'],
+    'deposit'    => ['superadmin', 'admin', 'accountant'],
     'products'   => ['superadmin', 'admin', 'stock_manager'],
     'vendors'    => ['superadmin', 'admin', 'stock_manager'],
     'customers'  => ['superadmin', 'admin', 'salesman'],

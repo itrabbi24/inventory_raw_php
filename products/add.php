@@ -75,13 +75,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Product Name</label>
-                                <input type="text" name="name" required>
+                                <input type="text" name="name" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Model</label>
-                                <input type="text" name="model">
+                                <input type="text" name="model" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Minimum Stock alert</label>
-                                <input type="number" name="min_stock" value="5">
+                                <input type="number" name="min_stock" value="5" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-12">

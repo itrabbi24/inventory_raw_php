@@ -28,6 +28,7 @@ $current_page = $_SERVER['PHP_SELF'];
                             <ul>
                                 <li><a href="<?php echo BASE_URL; ?>sales/list.php" class="<?php echo (strpos($current_page, 'sales/list.php') !== false) ? 'active' : ''; ?>">Sales List</a></li>
                                 <li><a href="<?php echo BASE_URL; ?>sales/add.php" class="<?php echo (strpos($current_page, 'sales/add.php') !== false) ? 'active' : ''; ?>">New Sales</a></li>
+                                <li><a href="<?php echo BASE_URL; ?>sales/pos.php" class="<?php echo (strpos($current_page, 'sales/pos.php') !== false) ? 'active' : ''; ?>">POS (Sales)</a></li>
                             </ul>
                         </li>
                         <?php endif; ?>
@@ -62,12 +63,12 @@ $current_page = $_SERVER['PHP_SELF'];
                         </li>
                         <?php endif; ?>
 
-                        <?php if (hasPermission('depositor')): ?>
+                        <?php if (hasPermission('deposit')): ?>
                         <li class="submenu">
-                            <a href="javascript:void(0);"><img src="<?php echo BASE_URL; ?>assets/img/icons/expense1.svg" alt="img"><span> Depositor</span> <span class="menu-arrow"></span></a>
+                            <a href="javascript:void(0);"><img src="<?php echo BASE_URL; ?>assets/img/icons/expense1.svg" alt="img"><span> Deposit</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="<?php echo BASE_URL; ?>depositor/names/list.php" class="<?php echo (strpos($current_page, 'depositor/names/list.php') !== false) ? 'active' : ''; ?>">Depositor Names</a></li>
-                                <li><a href="<?php echo BASE_URL; ?>depositor/transactions/list.php" class="<?php echo (strpos($current_page, 'depositor/transactions/list.php') !== false) ? 'active' : ''; ?>">Transactions</a></li>
+                                <li><a href="<?php echo BASE_URL; ?>deposit/names/list.php" class="<?php echo (strpos($current_page, 'deposit/names/list.php') !== false) ? 'active' : ''; ?>">Deposit Names</a></li>
+                                <li><a href="<?php echo BASE_URL; ?>deposit/transactions/list.php" class="<?php echo (strpos($current_page, 'deposit/transactions/list.php') !== false) ? 'active' : ''; ?>">Transactions</a></li>
                             </ul>
                         </li>
                         <?php endif; ?>
@@ -94,7 +95,7 @@ $current_page = $_SERVER['PHP_SELF'];
                                 <li><a href="<?php echo BASE_URL; ?>reports/product_sales.php" class="<?php echo (strpos($current_page, 'reports/product_sales.php') !== false) ? 'active' : ''; ?>">Product Wise Sales</a></li>
                                 <li><a href="<?php echo BASE_URL; ?>reports/purchases.php" class="<?php echo (strpos($current_page, 'reports/purchases.php') !== false) ? 'active' : ''; ?>">Purchase Report</a></li>
                                 <li><a href="<?php echo BASE_URL; ?>reports/inventory.php" class="<?php echo (strpos($current_page, 'reports/inventory.php') !== false) ? 'active' : ''; ?>">Stock Report</a></li>
-                                <li><a href="<?php echo BASE_URL; ?>reports/depositors.php" class="<?php echo (strpos($current_page, 'reports/depositors.php') !== false) ? 'active' : ''; ?>">Depositor Report</a></li>
+                                <li><a href="<?php echo BASE_URL; ?>reports/deposit.php" class="<?php echo (strpos($current_page, 'reports/deposit.php') !== false) ? 'active' : ''; ?>">Deposit Report</a></li>
                                 <li><a href="<?php echo BASE_URL; ?>reports/profit_loss.php" class="<?php echo (strpos($current_page, 'reports/profit_loss.php') !== false) ? 'active' : ''; ?>">Profit/Loss</a></li>
                             </ul>
                         </li>

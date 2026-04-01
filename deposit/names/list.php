@@ -1,12 +1,12 @@
 <?php
-$pageTitle = 'Depositor List';
+$pageTitle = 'Deposit List';
 require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../includes/sidebar.php';
 
 $stmt = $pdo->query("SELECT * FROM depositors WHERE status=1 ORDER BY id DESC");
-$depositors = $stmt->fetchAll();
+$deposits = $stmt->fetchAll();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_depositor'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_deposit'])) {
     $name    = sanitize($_POST['name'] ?? '');
     $phone   = sanitize($_POST['phone'] ?? '');
     $address = sanitize($_POST['address'] ?? '');
@@ -24,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_depositor'])) {
     <div class="content">
         <div class="page-header">
             <div class="page-title">
-                <h4>Depositor Names</h4>
-                <h6>Master list of depositors</h6>
+                <h4>Deposit Names</h4>
+                <h6>Master list of deposits</h6>
             </div>
             <div class="page-btn">
-                <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addDepModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Depositor</a>
+                <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#addDepModal"><img src="<?php echo BASE_URL; ?>assets/img/icons/plus.svg" alt="img" class="me-1">Add Deposit Account</a>
             </div>
         </div>
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_depositor'])) {
                             <tr><th>Name</th><th>Phone</th><th>Address</th><th>Action</th></tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($depositors as $dep): ?>
+                            <?php foreach ($deposits as $dep): ?>
                             <tr>
                                 <td><?php echo $dep['name']; ?></td>
                                 <td><?php echo $dep['phone']; ?></td>
@@ -64,14 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_depositor'])) {
 <div class="modal fade" id="addDepModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Add New Depositor</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5 class="modal-title">Add New Deposit Account</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <form action="list.php" method="POST">
                 <div class="modal-body">
                     <div class="form-group"><label>Name</label><input type="text" name="name" class="form-control" required></div>
                     <div class="form-group"><label>Phone</label><input type="text" name="phone" class="form-control"></div>
                     <div class="form-group"><label>Address</label><textarea name="address" class="form-control"></textarea></div>
                 </div>
-                <div class="modal-footer"><button type="submit" name="add_depositor" class="btn btn-primary">Add</button></div>
+                <div class="modal-footer"><button type="submit" name="add_deposit" class="btn btn-primary">Add</button></div>
             </form>
         </div>
     </div>
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_depositor'])) {
 <script>
 function deleteDep(id) {
     Swal.fire({
-        title: 'Delete this depositor?',
+        title: 'Delete this deposit account?',
         icon: 'warning',
         showCancelButton: true
     }).then((result) => {

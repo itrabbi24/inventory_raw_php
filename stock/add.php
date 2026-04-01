@@ -93,37 +93,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Invoice No</label>
-                                <input type="text" name="invoice_no" placeholder="INV-2024..." value="<?php echo generateInvoiceNo($pdo, 'STK', 'stock_in', 'invoice_no'); ?>">
+                                <input type="text" name="invoice_no" class="form-control" placeholder="INV-2024..." value="<?php echo generateInvoiceNo($pdo, 'STK', 'stock_in', 'invoice_no'); ?>">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Quantity</label>
-                                <input type="number" name="quantity" value="1" min="1" required>
+                                <input type="number" name="quantity" class="form-control" value="1" min="1" required>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Unit Purchase Price</label>
-                                <input type="number" name="purchase_price" step="0.01" value="0.00">
+                                <input type="number" name="purchase_price" class="form-control" step="0.01" value="0.00">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Shipping Charge</label>
-                                <input type="number" name="shipping_charge" step="0.01" value="0.00">
+                                <input type="number" name="shipping_charge" class="form-control" step="0.01" value="0.00">
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label>Warranty (Months)</label>
-                                <input type="number" name="warranty_months" value="0">
+                                <input type="number" name="warranty_months" class="form-control" value="0">
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label>Serial Number (If any)</label>
-                                <input type="text" name="serial_number" placeholder="Enter serial numbers separated by comma">
+                                <input type="text" name="serial_number" class="form-control" placeholder="Enter serial numbers separated by comma">
                             </div>
                         </div>
                         <div class="col-lg-12">

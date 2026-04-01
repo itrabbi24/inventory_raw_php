@@ -30,17 +30,17 @@ try {
 
 // Role permissions: module => [allowed roles]
 define('ROLE_PERMISSIONS', [
-    'users'      => ['superadmin'],
-    'settings'   => ['superadmin', 'admin'],
-    'reports'    => ['superadmin', 'admin', 'accountant'],
-    'stock'      => ['superadmin', 'admin', 'stock_manager'],
-    'sales'      => ['superadmin', 'admin', 'salesman'],
-    'challan'    => ['superadmin', 'admin', 'salesman'],
-    'quotation'  => ['superadmin', 'admin', 'salesman'],
-    'deposit'    => ['superadmin', 'admin', 'accountant'],
-    'products'   => ['superadmin', 'admin', 'stock_manager'],
-    'vendors'    => ['superadmin', 'admin', 'stock_manager'],
-    'customers'  => ['superadmin', 'admin', 'salesman'],
+    'users'      => ['admin'],
+    'settings'   => ['admin'],
+    'reports'    => ['admin', 'manager'],
+    'stock'      => ['admin', 'manager'],
+    'sales'      => ['admin', 'manager', 'salesman'],
+    'challan'    => ['admin', 'manager', 'salesman'],
+    'quotation'  => ['admin', 'manager', 'salesman'],
+    'deposit'    => ['admin', 'manager'],
+    'products'   => ['admin', 'manager', 'salesman'],
+    'vendors'    => ['admin', 'manager'],
+    'customers'  => ['admin', 'manager', 'salesman'],
 ]);
 
 function hasPermission(string $module): bool {

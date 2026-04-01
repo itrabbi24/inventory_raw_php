@@ -97,10 +97,16 @@ $products = $stmt->fetchAll();
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><span class="badges <?php echo ($product['current_stock'] <= $product['min_stock_alert']) ? 'bg-lightred' : 'bg-lightgreen'; ?>"><?php echo $product['current_stock']; ?></span></td>
                                 <td>
-                                    <a class="me-3" href="<?php echo BASE_URL; ?>products/edit.php?id=<?php echo $product['id']; ?>">
+                                    <a class="me-3" href="javascript:void(0);" onclick="adjustStock(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', <?php echo $product['current_stock']; ?>)" title="Adjust Stock">
+                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/edit-5.svg" alt="img">
+                                    </a>
+                                    <a class="me-3" href="javascript:void(0);" onclick="viewStockHistory(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>')" title="View History">
+                                        <img src="<?php echo BASE_URL; ?>assets/img/icons/time.svg" alt="img">
+                                    </a>
+                                    <a class="me-3" href="<?php echo BASE_URL; ?>products/edit.php?id=<?php echo $product['id']; ?>" title="Edit Product">
                                         <img src="<?php echo BASE_URL; ?>assets/img/icons/edit.svg" alt="img">
                                     </a>
-                                    <a class="confirm-text" href="javascript:void(0);" onclick="deleteProduct(<?php echo $product['id']; ?>)">
+                                    <a class="confirm-text" href="javascript:void(0);" onclick="deleteProduct(<?php echo $product['id']; ?>)" title="Delete Product">
                                         <img src="<?php echo BASE_URL; ?>assets/img/icons/delete.svg" alt="img">
                                     </a>
                                 </td>
@@ -115,25 +121,171 @@ $products = $stmt->fetchAll();
     </div>
 </div>
 
+<!-- Adjust Stock Modal -->
+<div class="modal fade" id="adjustStockModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Stock Adjustment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="adjustStockForm">
+                <div class="modal-body">
+                    <input type="hidden" name="product_id" id="adj_product_id">
+                    <div class="form-group">
+                        <label class="text-muted small fw-bold">PRODUCT</label>
+                        <input type="text" id="adj_product_name" class="form-control bg-light border-0" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="text-muted small fw-bold">CURRENT STOCK</label>
+                                <input type="number" id="adj_current_stock" class="form-control bg-light border-0" readonly>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="text-muted small fw-bold">NEW STOCK</label>
+                                <input type="number" name="new_stock" id="adj_new_stock" class="form-control border-warning" required>
+                                <span class="small text-warning" id="adj_diff_msg"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-muted small fw-bold">REASON FOR ADJUSTMENT</label>
+                        <select name="reason" class="select" required>
+                            <option value="Damage">Damage</option>
+                            <option value="Restock">Restock</option>
+                            <option value="Correction">Data Correction</option>
+                            <option value="Expired">Expired</option>
+                            <option value="Lost">Lost/Theft</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-muted small fw-bold">NOTES (OPTIONAL)</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning px-5 fw-bold text-white shadow-sm">Save Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Stock Movement Log: <span id="hist_title_name" class="text-warning"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover" id="historyTable">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th>Date</th>
+                                <th>Old Stock</th>
+                                <th>New Stock</th>
+                                <th>Change</th>
+                                <th>Reason</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+function viewStockHistory(id, name) {
+    $('#hist_title_name').text(name);
+    $('#historyBody').html('<tr><td colspan="6" class="text-center p-4"><div class="spinner-border text-warning spinner-border-sm me-2"></div>Loading History...</td></tr>');
+    $('#historyModal').modal('show');
+    
+    $.get('<?php echo BASE_URL; ?>ajax/get_stock_history.php', {product_id: id}, function(res) {
+        let history = JSON.parse(res);
+        if(history.length === 0) {
+            $('#historyBody').html('<tr><td colspan="6" class="text-center p-4">No adjustment history found tracking for this item</td></tr>');
+            return;
+        }
+        
+        let html = history.map(h => `
+            <tr>
+                <td class="small text-muted">${h.created_at}</td>
+                <td>${h.old_stock}</td>
+                <td class="fw-bold">${h.new_stock}</td>
+                <td><span class="badge ${h.change_qty >= 0 ? 'bg-lightgreen' : 'bg-lightred'}">${h.change_qty >= 0 ? '+' : ''}${h.change_qty}</span></td>
+                <td><span class="text-dark small">${h.reason}</span></td>
+                <td class="small text-muted" title="${h.notes}">${h.notes.substring(0, 30)}${h.notes.length > 30 ? '...' : ''}</td>
+            </tr>
+        `).join('');
+        $('#historyBody').html(html);
+    });
+}
+
+function adjustStock(id, name, current) {
+    $('#adj_product_id').val(id);
+    $('#adj_product_name').val(name);
+    $('#adj_current_stock').val(current);
+    $('#adj_new_stock').val(current);
+    $('#adj_diff_msg').text('');
+    
+    $('#adj_new_stock').on('input', function() {
+        let diff = $(this).val() - current;
+        if(diff > 0) $('#adj_diff_msg').text('Adding +' + diff + ' units').removeClass('text-danger').addClass('text-success');
+        else if(diff < 0) $('#adj_diff_msg').text('Subtracting ' + diff + ' units').removeClass('text-success').addClass('text-danger');
+        else $('#adj_diff_msg').text('');
+    });
+
+    $('#adjustStockModal').modal('show');
+}
+
+$('#adjustStockForm').on('submit', function(e) {
+    e.preventDefault();
+    let btn = $(this).find('button[type="submit"]');
+    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
+    
+    $.ajax({
+        url: '<?php echo BASE_URL; ?>ajax/adjust_stock.php',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(res) {
+            let data = JSON.parse(res);
+            if(data.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Stock Adjusted', showConfirmButton: false, timer: 1500 })
+                .then(() => location.reload());
+            } else {
+                Swal.fire('Error', data.message, 'error');
+                btn.prop('disabled', false).html('Save Adjustment');
+            }
+        }
+    });
+});
+
 function deleteProduct(id) {
     Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: "This will deactivate the product!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        confirmButtonColor: '#ff9f43',
+        cancelButtonText: 'Cancel',
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Ajax call here to delete product
             $.get('<?php echo BASE_URL; ?>ajax/delete_record.php', {table: 'products', id: id}, function(res) {
                 let data = JSON.parse(res);
                 if(data.status == 'success') {
-                    Swal.fire('Deleted!', 'Product has been deleted.', 'success').then(() => {
-                        location.reload();
-                    });
+                    Swal.fire('Deleted!', 'Product removed.', 'success').then(() => location.reload());
                 } else {
                     Swal.fire('Error!', data.message, 'error');
                 }

@@ -6,10 +6,25 @@ require_once __DIR__ . '/../includes/sidebar.php';
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    foreach ($_POST['settings'] as $key => $value) {
-        $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = ?");
-        $stmt->execute([sanitize($value), $key]);
+    // Regular settings update
+    if (isset($_POST['settings'])) {
+        foreach ($_POST['settings'] as $key => $value) {
+            $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = ?");
+            $stmt->execute([sanitize($value), $key]);
+        }
     }
+
+    // Logo upload handling
+    if (isset($_FILES['company_logo']) && $_FILES['company_logo']['error'] === UPLOAD_ERR_OK) {
+        try {
+            $logo_name = uploadFile($_FILES['company_logo'], 'logo');
+            $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = 'company_logo'");
+            $stmt->execute([$logo_name]);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+        }
+    }
+
     logActivity($pdo, $_SESSION['user_id'], 'Updated general settings', 'settings', 0);
     $message = 'Settings updated successfully!';
     // Refresh settings
@@ -61,7 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="col-lg-12 mb-4 mt-4">
-                            <h5 class="fw-bold text-warning border-bottom pb-2">Branding & Localisation</h5>
+                            <h5 class="fw-bold text-warning border-bottom pb-2">Branding & Identity</h5>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group mb-3">
+                                <label class="text-muted small fw-bold">COMPANY LOGO</label>
+                                <div class="custom-file-container mt-2">
+                                    <div class="mb-3">
+                                        <?php 
+                                        $logo = !empty($settings['company_logo']) ? BASE_URL . 'uploads/logo/' . $settings['company_logo'] : BASE_URL . 'assets/img/logo.png';
+                                        ?>
+                                        <img src="<?php echo $logo; ?>" alt="logo" class="img-thumbnail" style="max-height: 100px; background: #f8f9fa;">
+                                    </div>
+                                    <input type="file" name="company_logo" class="form-control">
+                                    <small class="text-muted">Recommended size: 200x100px (PNG/JPG)</small>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">

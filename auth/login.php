@@ -276,17 +276,23 @@ $settings = getSettings($pdo);
             <button type="submit" class="btn btn-login">Sign In Now</button>
         </form>
 
-        <div class="demo-box">
-            <p><strong>Quick Demo Access:</strong></p>
-            <div class="d-flex justify-content-center gap-2 mt-2">
-                <button type="button" class="btn btn-outline-warning btn-sm fw-bold px-3 py-1" onclick="fillDemo('argrabby@gmail.com', 'admin123')">
+        <div class="demo-box mt-4">
+            <p class="mb-3 small fw-bold text-muted text-uppercase">Quick Demo Login</p>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <button type="button" class="btn btn-outline-warning btn-sm fw-bold px-3 py-1" onclick="fillDemo('argrabby@gmail.com', 'admin123')" title="Administrator">
                     <i class="fas fa-user-shield me-1"></i> Admin
                 </button>
-                <button type="button" class="btn btn-outline-info btn-sm fw-bold px-3 py-1" onclick="fillDemo('salesman@example.com', 'sales123')">
+                <button type="button" class="btn btn-outline-info btn-sm fw-bold px-3 py-1" onclick="fillDemo('salesman@example.com', 'sales123')" title="Sales Person">
                     <i class="fas fa-shopping-cart me-1"></i> Sales
                 </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 py-1" onclick="fillDemo('stock@example.com', 'stock123')" title="Stock Manager">
+                    <i class="fas fa-boxes me-1"></i> Stock
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm fw-bold px-3 py-1" onclick="fillDemo('accountant@example.com', 'acc123')" title="Accountant">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> Account
+                </button>
             </div>
-            <p class="mt-2 small text-muted">argrabby@gmail.com / admin123</p>
+            <p class="mt-3 small text-muted border-top pt-2">Default: <span class="text-dark fw-bold">argrabby@gmail.com / admin123</span></p>
         </div>
 
         <div class="dev-info">

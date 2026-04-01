@@ -19,147 +19,128 @@ $items = $stmt_items->fetchAll();
 ?>
 
 <div class="page-wrapper">
-    <div class="content">
-        <div class="page-header d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="content p-3">
+        <div class="page-header d-flex justify-content-between align-items-center mb-3 no-print">
             <div class="page-title">
-                <h4>Quotation Details</h4>
-                <h6>Full detail for Quotation #<?php echo $quotation['quotation_no']; ?></h6>
+                <h4>Quotation #<?php echo $quotation['quotation_no']; ?></h4>
             </div>
             <div class="page-btn">
-                <button onclick="window.print()" class="btn btn-primary shadow-sm px-4">
-                    <i class="fas fa-print me-2"></i>Print/Download PDF
+                <button onclick="window.print()" class="btn btn-primary btn-sm px-3 shadow-sm">
+                    <i class="fas fa-print me-1"></i>Print/PDF
                 </button>
             </div>
         </div>
 
-        <div class="card shadow-sm border-0 invoice-main-card" style="border-radius: 20px;">
-            <div class="card-body p-5">
+        <div class="card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-body p-4 p-md-5">
                 <div id="invoice" class="invoice-container">
                     
-                    <!-- Header Section -->
-                    <div class="row align-items-start mb-5">
-                        <div class="col-8">
-                            <div class="company-brand mb-4">
+                    <!-- Top Ribbon -->
+                    <div class="row align-items-center mb-4">
+                        <div class="col-7">
+                            <div class="d-flex align-items-center">
                                 <?php $logo = !empty($settings['company_logo']) ? BASE_URL . 'uploads/logo/' . $settings['company_logo'] : BASE_URL . 'assets/img/logo.png'; ?>
-                                <img src="<?php echo $logo; ?>" alt="logo" class="logo-img mb-2">
-                                <h2 class="fw-bold text-dark m-0 d-block"><?php echo $settings['company_name']; ?></h2>
-                                <p class="text-muted small mt-1 line-height-1">
-                                    <i class="fas fa-map-marker-alt me-1 text-primary"></i> <?php echo $settings['company_address']; ?><br>
-                                    <i class="fas fa-phone-alt me-1 text-primary"></i> <?php echo $settings['company_phone']; ?> | 
-                                    <i class="fas fa-envelope me-1 text-primary"></i> <?php echo $settings['company_email']; ?>
-                                </p>
+                                <img src="<?php echo $logo; ?>" alt="logo" class="logo-img me-3">
+                                <div>
+                                    <h3 class="fw-bold text-dark m-0"><?php echo $settings['company_name']; ?></h3>
+                                    <p class="text-muted small m-0 lh-sm">
+                                        <?php echo $settings['company_address']; ?><br>
+                                        <?php echo $settings['company_phone']; ?> | <?php echo $settings['company_email']; ?>
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-4 text-end">
-                            <h1 class="text-uppercase fw-bold text-primary display-5 mb-1" style="letter-spacing: -2px;">QUOTATION</h1>
-                            <div class="bg-light p-3 rounded-4 d-inline-block shadow-sm text-start border-start border-4 border-primary">
-                                <p class="mb-0 text-muted small fw-bold text-uppercase">Serial No</p>
-                                <h5 class="fw-bold text-dark mb-2">#<?php echo $quotation['quotation_no']; ?></h5>
-                                <p class="mb-0 text-muted small fw-bold text-uppercase">Issue Date</p>
-                                <h6 class="fw-bold m-0"><?php echo date('d M, Y', strtotime($quotation['quotation_date'])); ?></h6>
-                                <div class="mt-2 pt-2 border-top">
-                                    <p class="mb-0 text-danger small fw-bold text-uppercase">Valid Until</p>
-                                    <h6 class="fw-bold m-0 text-danger"><?php echo date('d M, Y', strtotime('+30 days', strtotime($quotation['quotation_date']))); ?></h6>
-                                </div>
+                        <div class="col-5 text-end">
+                            <h2 class="text-primary fw-extrabold m-0" style="font-size: 32px;">QUOTATION</h2>
+                            <p class="text-dark fw-bold m-0 small mt-1">#<?php echo $quotation['quotation_no']; ?></p>
+                            <div class="d-inline-block bg-light px-2 py-1 rounded small mt-2 border">
+                                <span class="text-muted">Issue:</span> <?php echo date('d-m-Y', strtotime($quotation['quotation_date'])); ?> |
+                                <span class="text-danger fw-bold">Valid Until:</span> <?php echo date('d-m-Y', strtotime('+30 days', strtotime($quotation['quotation_date']))); ?>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Recipient Section -->
-                    <div class="row pt-4 mb-5">
-                        <div class="col-6">
-                            <h6 class="text-primary text-uppercase fw-extrabold small mb-3 letter-spacing-1">Quotation Prepared For:</h6>
-                            <h4 class="fw-bold text-dark m-0"><?php echo $quotation['customer_name'] ?: 'Valued Customer'; ?></h4>
-                            <p class="text-muted mt-2 mb-1"><i class="fas fa-phone-alt me-2 text-primary"></i><?php echo $quotation['phone'] ?: 'N/A'; ?></p>
-                            <p class="text-muted mb-0"><i class="fas fa-map-marker-alt me-2 text-primary"></i><?php echo $quotation['address'] ?: 'N/A'; ?></p>
+                    <div class="row mb-4 pt-2">
+                        <div class="col-12">
+                            <div class="bg-light p-3 rounded-3 border-start border-4 border-primary">
+                                <h6 class="text-primary text-uppercase small fw-bold mb-1">Customer Info:</h6>
+                                <h5 class="fw-bold text-dark m-0"><?php echo $quotation['customer_name'] ?: 'Valued Customer'; ?></h5>
+                                <p class="text-muted m-0 small"><?php echo $quotation['phone']; ?> | <?php echo $quotation['address']; ?></p>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Items Table -->
-                    <div class="table-responsive">
-                        <table class="table table-custom mb-0">
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-bordered mb-0 printable-table">
                             <thead>
-                                <tr class="bg-primary text-white">
-                                    <th class="py-3 px-4 border-0" style="width: 50px;">#</th>
-                                    <th class="py-3 px-4 border-0">Product Description</th>
-                                    <th class="py-3 px-2 border-0 text-center" style="width: 80px;">QTY</th>
-                                    <th class="py-3 px-4 border-0 text-end" style="width: 140px;">Unit Price</th>
-                                    <th class="py-3 px-4 border-0 text-end" style="width: 140px;">Total Price</th>
+                                <tr class="bg-primary text-white text-center">
+                                    <th style="width: 40px;">#</th>
+                                    <th>Product & Specification</th>
+                                    <th style="width: 60px;">QTY</th>
+                                    <th style="width: 110px;">Unit Price</th>
+                                    <th style="width: 110px;">Total Price</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php $i=1; foreach($items as $item): ?>
-                                <tr class="item-row align-middle border-bottom">
-                                    <td class="py-3 px-4 text-center text-muted"><?php echo str_pad($i++, 2, '0', STR_PAD_LEFT); ?></td>
-                                    <td class="py-3 px-4">
-                                        <h6 class="fw-bold text-dark mb-1"><?php echo $item['product_name']; ?></h6>
+                                <tr class="text-dark align-middle">
+                                    <td class="text-center small py-2"><?php echo $i++; ?></td>
+                                    <td class="py-2">
+                                        <div class="fw-bold lh-sm"><?php echo $item['product_name']; ?></div>
                                         <?php if(!empty($item['description'])): ?>
-                                            <p class="text-muted small mb-1 lh-sm"><?php echo nl2br($item['description']); ?></p>
+                                            <div class="text-muted x-small lh-xs mt-1"><?php echo nl2br($item['description']); ?></div>
                                         <?php endif; ?>
-                                        <?php if(!empty($item['serial_number'])): ?>
-                                            <span class="badge bg-light text-primary border px-2 py-1" style="font-size: 10px;">S/N: <?php echo $item['serial_number']; ?></span>
-                                        <?php endif; ?>
-                                        <?php if($item['warranty_months'] > 0): ?>
-                                            <span class="badge bg-light text-info border px-2 py-1 ms-1" style="font-size: 10px;">Warranty: <?php echo $item['warranty_months']; ?> Mo</span>
-                                        <?php endif; ?>
+                                        <div class="mt-1">
+                                            <?php if(!empty($item['serial_number'])): ?><span class="badge bg-light text-dark border x-small p-1">S/N: <?php echo $item['serial_number']; ?></span><?php endif; ?>
+                                            <?php if($item['warranty_months'] > 0): ?><span class="badge bg-light text-primary border x-small p-1 ms-1">Warranty: <?php echo $item['warranty_months']; ?>Mo</span><?php endif; ?>
+                                        </div>
                                     </td>
-                                    <td class="py-3 px-2 text-center fw-bold"><?php echo $item['quantity']; ?></td>
-                                    <td class="py-3 px-4 text-end text-muted">৳ <?php echo number_format($item['unit_price'], 2); ?></td>
-                                    <td class="py-3 px-4 text-end fw-bold text-dark">৳ <?php echo number_format($item['total_price'], 2); ?></td>
+                                    <td class="text-center fw-bold small"><?php echo $item['quantity']; ?></td>
+                                    <td class="text-end small">৳ <?php echo number_format($item['unit_price'], 2); ?></td>
+                                    <td class="text-end fw-bold small">৳ <?php echo number_format($item['total_price'], 2); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold bg-light small">Subtotal:</td>
+                                    <td class="text-end fw-bold bg-light small">৳ <?php echo number_format($quotation['subtotal'], 2); ?></td>
+                                </tr>
+                                <?php if($quotation['discount'] > 0): ?>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold bg-light small text-info">Discount:</td>
+                                    <td class="text-end fw-bold bg-light small text-info">- ৳ <?php echo number_format($quotation['discount'], 2); ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr class="bg-primary bg-opacity-10">
+                                    <td colspan="4" class="text-end h5 fw-extrabold m-0 py-2">GRAND TOTAL:</td>
+                                    <td class="text-end h5 fw-extrabold text-primary m-0 py-2">৳ <?php echo number_format($quotation['total_amount'], 2); ?></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
 
-                    <!-- Summary Section -->
-                    <div class="row g-0">
-                        <div class="col-7 p-4 bg-light rounded-bottom-4">
-                            <h6 class="text-uppercase fw-bold text-primary small mb-3">Terms & Conditions:</h6>
-                            <ul class="text-muted small list-unstyled">
-                                <li class="mb-1">• This quotation is valid for 30 days from the date of issue.</li>
-                                <li class="mb-1">• Delivery will be made within 3-5 working days of order confirmation.</li>
-                                <li class="mb-1">• Payment should be made in favor of <?php echo $settings['company_name']; ?>.</li>
-                                <li>• Please contact us for any further clarification or modification.</li>
-                            </ul>
+                    <!-- Footer Section -->
+                    <div class="row align-items-end g-0">
+                        <div class="col-8">
+                            <p class="small text-dark mb-1"><strong>In Word:</strong> <?php echo ucfirst(numberToWords($quotation['total_amount'])); ?> only.</p>
                             <?php if(!empty($quotation['notes'])): ?>
-                                <h6 class="text-uppercase fw-bold text-dark small mt-4 mb-2">Note:</h6>
-                                <p class="text-muted small mb-0"><?php echo $quotation['notes']; ?></p>
+                                <div class="bg-light p-2 rounded small border mt-2" style="max-width: 90%;">
+                                    <strong>Note:</strong> <?php echo $quotation['notes']; ?>
+                                </div>
                             <?php endif; ?>
-                        </div>
-                        <div class="col-5 p-4 border-start bg-white">
-                            <div class="d-flex justify-content-between mb-3 text-muted">
-                                <span class="fw-bold text-uppercase small">Subtotal</span>
-                                <span class="fw-bold">৳ <?php echo number_format($quotation['subtotal'], 2); ?></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3 text-info">
-                                <span class="fw-bold text-uppercase small">Discount (-)</span>
-                                <span class="fw-bold">৳ <?php echo number_format($quotation['discount'], 2); ?></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-4 mt-2">
-                                <span class="h4 fw-extrabold text-dark m-0">GRAND TOTAL</span>
-                                <span class="h4 fw-extrabold text-primary m-0">৳ <?php echo number_format($quotation['total_amount'], 2); ?></span>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-4 border border-primary border-opacity-25 mt-2">
-                                <p class="mb-0 text-center text-primary small fw-bold">Amount in Word: <?php echo ucfirst(numberToWords($quotation['total_amount'])); ?> Only.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Footer Signature -->
-                    <div class="row pt-5 mt-5">
-                        <div class="col-6">
-                            <div class="mt-5 text-center d-inline-block">
-                                <div class="border-top pt-2" style="width: 200px; border-color: #ddd !important;">
-                                    <p class="mb-0 text-muted small fw-bold">Customer's Signature</p>
+                            
+                            <div class="mt-4">
+                                <h6 class="small fw-bold text-primary text-uppercase mb-1">General Terms & Conditions:</h6>
+                                <div class="text-muted x-small lh-xs">
+                                    • Quote valid for 30 days. • Prices include relevant taxes. • Confirmation required for order placement.
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 text-end">
-                            <div class="mt-5 text-center d-inline-block">
-                                <div class="border-top pt-2" style="width: 200px; border-color: #ddd !important;">
-                                    <p class="mb-0 text-muted small fw-bold">Authorized Signature</p>
-                                </div>
+                        <div class="col-4 text-center">
+                            <div class="mt-5 pt-2 border-top mx-auto" style="width: 180px; border-color: #333 !important;">
+                                <p class="mb-0 text-dark small fw-bold">Authorized Signature</p>
                             </div>
                         </div>
                     </div>
@@ -171,28 +152,25 @@ $items = $stmt_items->fetchAll();
 </div>
 
 <style>
-.invoice-container { font-family: 'Inter', sans-serif; background: #fff; position: relative; }
-.logo-img { max-height: 80px; width: auto; object-fit: contain; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+.invoice-container { font-family: 'Inter', sans-serif; line-height: 1.2; }
+.logo-img { max-height: 60px; width: auto; object-fit: contain; }
 .fw-extrabold { font-weight: 800; }
-.letter-spacing-1 { letter-spacing: 1px; }
-.line-height-1 { line-height: 1.5; }
-.table-custom thead th { border-top-left-radius: 8px; border-top-right-radius: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-.table-custom tbody tr:hover { background-color: #fcfcfc; }
-.item-row td { vertical-align: top; }
+.x-small { font-size: 10px; }
+.lh-xs { line-height: 1.2; }
 .bg-primary { background-color: #ff9b44 !important; }
 .text-primary { color: #ff9b44 !important; }
 .border-primary { border-color: #ff9b44 !important; }
+.printable-table th { padding: 6px !important; font-size: 11px; text-transform: uppercase; }
 
 @media print {
+    @page { size: A4; margin: 10mm; }
     body { background: #fff !important; }
     .sidebar, .header, .page-header, .btn, footer, .no-print { display: none !important; }
     .page-wrapper { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-    .card { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
+    .card { box-shadow: none !important; border: none !important; }
     .card-body { padding: 0 !important; }
-    .invoice-container { padding: 40px !important; }
     .table-responsive { overflow: visible !important; }
-    .table { width: 100% !important; table-layout: fixed !important; }
-    .table td, .table th { word-wrap: break-word !important; }
     .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
     .bg-primary { background-color: #ff9b44 !important; -webkit-print-color-adjust: exact; }
     .text-white { color: #fff !important; -webkit-print-color-adjust: exact; }

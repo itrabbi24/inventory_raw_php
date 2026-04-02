@@ -57,9 +57,10 @@ try {
         // Get current buying price to store in sale record
         $p_info = $pdo->prepare("SELECT buying_price FROM products WHERE id = ?");
         $p_info->execute([$pid]);
-        $buying_price = (float)$p_info->fetchColumn();
+        $current_buying_price = (float)$p_info->fetchColumn();
 
-        $stmt_item->execute([$sale_id, $pid, $buying_price, $qty, $price]);
+        $stmt_item->execute([$sale_id, $pid, $current_buying_price, $qty, $price]);
+
         
         // Update stock
         updateStock($pdo, $pid, $qty, 'subtract');

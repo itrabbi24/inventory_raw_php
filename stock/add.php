@@ -29,7 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update product current stock
             updateStock($pdo, $product_id, $quantity, 'add');
             
-            logActivity($pdo, $_SESSION['user_id'], "Added stock for product ID: {$product_id}", 'stock_in', $stock_id);
+            // Update product's buying price with landed cost (Unit Price + Shipping per unit)
+            $landed_cost = $price + ($shipping / $quantity);
+            $stmt_update_price = $pdo->prepare("UPDATE products SET buying_price = ? WHERE id = ?");
+            $stmt_update_price->execute([$landed_cost, $product_id]);
+            
+            logActivity($pdo, $_SESSION['user_id'], "Added stock for product ID: {$product_id}. Updated buying price to: {$landed_cost}", 'stock_in', $stock_id);
+
 
             $pdo->commit();
             $_SESSION['message'] = "Stock added successfully!";

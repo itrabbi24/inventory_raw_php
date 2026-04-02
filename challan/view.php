@@ -42,8 +42,8 @@ $items = $stmt_items->fetchAll();
                                 <?php $logo = !empty($settings['company_logo']) ? BASE_URL . 'uploads/logo/' . $settings['company_logo'] : BASE_URL . 'assets/img/logo.png'; ?>
                                 <img src="<?php echo $logo; ?>" alt="logo" class="logo-img me-3">
                                 <div>
-                                    <h3 class="fw-bold text-dark m-0"><?php echo $settings['company_name']; ?></h3>
-                                    <p class="text-muted small m-0 lh-sm"><?php echo $settings['company_address']; ?><br><?php echo $settings['company_phone']; ?></p>
+                                    <h3 class="fw-bold text-dark m-0"><?php echo $settings['company_name'] ?? 'Inventory POS'; ?></h3>
+                                    <p class="text-muted small m-0 lh-sm"><?php echo $settings['company_address'] ?? 'Dhaka, Bangladesh'; ?><br><?php echo $settings['company_phone'] ?? '0123456789'; ?></p>
                                 </div>
                             </div>
                         </div>

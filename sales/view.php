@@ -40,8 +40,8 @@ $items = $stmt_items->fetchAll();
                             $logo = !empty($settings['company_logo']) ? BASE_URL . 'uploads/logo/' . $settings['company_logo'] : BASE_URL . 'assets/img/logo.png';
                             ?>
                             <img src="<?php echo $logo; ?>" alt="logo" class="mb-3" style="max-height: 80px;">
-                            <h2 class="fw-bold text-dark m-0"><?php echo $settings['company_name']; ?></h2>
-                            <p class="text-muted small mt-1"><?php echo $settings['company_address']; ?><br>Email: <?php echo $settings['company_email']; ?> | Phone: <?php echo $settings['company_phone']; ?></p>
+                            <h2 class="fw-bold text-dark m-0"><?php echo $settings['company_name'] ?? 'Inventory POS'; ?></h2>
+                            <p class="text-muted small mt-1"><?php echo $settings['company_address'] ?? 'Dhaka, Bangladesh'; ?><br>Email: <?php echo $settings['company_email'] ?? 'admin@example.com'; ?> | Phone: <?php echo $settings['company_phone'] ?? '0123456789'; ?></p>
                         </div>
                         <div class="invoice-meta text-end">
                             <h1 class="text-uppercase fw-bold text-warning mb-1" style="font-size: 3rem; letter-spacing: -2px;">INVOICE</h1>
@@ -107,7 +107,7 @@ $items = $stmt_items->fetchAll();
                                 <h6 class="fw-bold mb-3 text-dark text-uppercase small">Payment Notes:</h6>
                                 <p class="text-muted small mb-4 italic"><?php echo $sale['notes'] ?: 'No special notes for this transaction.'; ?></p>
                                 <div class="mt-auto">
-                                    <p class="mb-1 text-muted small">Authorized signature for: <strong><?php echo $settings['company_name']; ?></strong></p>
+                                    <p class="mb-1 text-muted small">Authorized signature for: <strong><?php echo $settings['company_name'] ?? 'Inventory POS'; ?></strong></p>
                                     <div class="mt-4 border-bottom d-inline-block" style="width: 250px;"></div>
                                 </div>
                             </div>

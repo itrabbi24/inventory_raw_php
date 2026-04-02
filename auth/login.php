@@ -69,7 +69,7 @@ $settings = getSettings($pdo);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta name="description" content="Inventory Management System - Modern Login">
-    <title>Login - <?php echo $settings['company_name']; ?></title>
+    <title>Login - <?php echo $settings['company_name'] ?? 'Inventory POS'; ?></title>
     
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png">

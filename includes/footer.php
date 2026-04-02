@@ -15,7 +15,7 @@
     <script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
 
     <footer class="footer text-center py-3 bg-light">
-        <p class="mb-0 text-muted">© <?php echo date('Y'); ?> <?php echo $settings['company_name']; ?> | Developed by <strong>ARG RABBI</strong></p>
+        <p class="mb-0 text-muted">© <?php echo date('Y'); ?> <?php echo $settings['company_name'] ?? 'Inventory POS'; ?> | Developed by <strong>ARG RABBI</strong></p>
     </footer>
 
 </body>

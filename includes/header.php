@@ -30,7 +30,7 @@ if (($settings['auto_update_enabled'] ?? '0') === '1') {
     <meta name="keywords" content="inventory, management, system, electronics, computer">
     <meta name="author" content="Antigravity">
     <meta name="robots" content="noindex, nofollow">
-    <title><?php echo $settings['company_name']; ?> - <?php echo $pageTitle; ?></title>
+    <title><?php echo $settings['company_name'] ?? 'Inventory POS'; ?> - <?php echo $pageTitle; ?></title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png">

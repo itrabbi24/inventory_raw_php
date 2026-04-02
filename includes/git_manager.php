@@ -59,7 +59,7 @@ if (!function_exists('getGitHistory')) {
 
 if (!function_exists('applyGitUpdates')) {
     function applyGitUpdates($pdo, $settings) {
-        if (!($settings['auto_update_enabled'] ?? '0') === '1') return ["status" => false, "msg" => "Auto-update disabled"];
+    if (($settings['auto_update_enabled'] ?? '0') !== '1') return ["status" => false, "msg" => "Auto-update disabled"];
         
         $remote = $settings['git_remote_name'] ?? 'origin';
         $branch = $settings['git_branch_name'] ?? 'main';

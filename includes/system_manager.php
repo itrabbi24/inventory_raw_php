@@ -75,3 +75,18 @@ if (!function_exists('runMigrations')) {
         return $results;
     }
 }
+
+/**
+ * Update current stock of a product
+ */
+if (!function_exists('updateStock')) {
+    function updateStock($pdo, $product_id, $quantity, $type = 'add') {
+        if ($type === 'add') {
+            $stmt = $pdo->prepare("UPDATE products SET current_stock = current_stock + ? WHERE id = ?");
+        } else {
+            $stmt = $pdo->prepare("UPDATE products SET current_stock = current_stock - ? WHERE id = ?");
+        }
+        return $stmt->execute([$quantity, $product_id]);
+    }
+}
+

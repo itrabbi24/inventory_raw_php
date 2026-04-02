@@ -3,10 +3,6 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 
-$pageTitle = 'System Updates';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/sidebar.php';
-
 $settings = getSettings($pdo);
 // Fetch apply update if requested
 if (isset($_GET['action']) && $_GET['action'] == 'apply') {
@@ -19,6 +15,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'apply') {
     header('Location: updates.php');
     exit();
 }
+
+$pageTitle = 'System Updates';
+require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/sidebar.php';
 
 
 // Fetch update history from database

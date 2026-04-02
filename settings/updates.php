@@ -7,6 +7,7 @@ $pageTitle = 'System Updates';
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
+$settings = getSettings($pdo);
 // Fetch apply update if requested
 if (isset($_GET['action']) && $_GET['action'] == 'apply') {
     $result = applyGitUpdates($pdo, $settings, true); // Force manually

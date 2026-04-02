@@ -40,7 +40,7 @@ $items = $stmt_items->fetchAll();
                             <?php 
                             $logo = !empty($settings['company_logo']) ? BASE_URL . 'uploads/logo/' . $settings['company_logo'] : BASE_URL . 'assets/img/logo.png';
                             ?>
-                            <img src="<?php echo $logo; ?>" alt="logo" class="mb-3" style="max-height: 80px;">
+                            <img src="<?php echo $logo; ?>" alt="logo" class="mb-3" style="max-height: 120px;">
                             <h2 class="fw-bold text-dark m-0"><?php echo $settings['company_name'] ?? 'Inventory POS'; ?></h2>
                             <p class="text-muted small mt-1"><?php echo $settings['company_address'] ?? 'Dhaka, Bangladesh'; ?><br>Email: <?php echo $settings['company_email'] ?? 'admin@example.com'; ?> | Phone: <?php echo $settings['company_phone'] ?? '0123456789'; ?></p>
                         </div>

@@ -33,7 +33,7 @@ if (($settings['auto_update_enabled'] ?? '0') === '1') {
     <title><?php echo $settings['company_name'] ?? 'Inventory POS'; ?> - <?php echo $pageTitle; ?></title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo BASE_URL; ?>assets/img/favicon.jpg">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/bootstrap.min.css">

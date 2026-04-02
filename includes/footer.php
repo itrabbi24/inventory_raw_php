@@ -11,6 +11,9 @@
     <script src="<?php echo BASE_URL; ?>assets/js/jquery.dataTables.min.js"></script>
     <script src="<?php echo BASE_URL; ?>assets/js/dataTables.bootstrap4.min.js"></script>
 
+    <!-- File Upload JS -->
+    <script src="<?php echo BASE_URL; ?>assets/plugins/fileupload/fileupload.min.js"></script>
+
     <!-- Custom JS -->
     <script src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
 

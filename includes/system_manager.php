@@ -8,8 +8,26 @@
  */
 if (!function_exists('getSettings')) {
     function getSettings($pdo) {
-        $stmt = $pdo->query("SELECT key_name, key_value FROM settings");
-        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+        $defaults = [
+            'company_name' => 'Inventory POS',
+            'company_email' => 'admin@example.com',
+            'company_phone' => '0123456789',
+            'company_address' => 'Dhaka, Bangladesh',
+            'company_logo' => '',
+            'currency_symbol' => '৳',
+            'invoice_prefix' => 'INV',
+            'auto_update_enabled' => '0',
+            'git_remote_name' => 'origin',
+            'git_branch_name' => 'main'
+        ];
+
+        try {
+            $stmt = $pdo->query("SELECT key_name, key_value FROM settings");
+            $dbSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            return array_merge($defaults, $dbSettings ?: []);
+        } catch (Exception $e) {
+            return $defaults;
+        }
     }
 }
 

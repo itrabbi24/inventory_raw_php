@@ -75,6 +75,12 @@ if (isset($_GET['execute'])) {
                         $('#console').html(res.output.replace(/\n/g, '<br>')).fadeIn();
                         $('.loader-spin').html('<i class="fas fa-check-circle text-success animate__animated animate__bounceIn"></i>');
                         $('#complete-btn').fadeIn();
+                        
+                        // Auto-redirect to dashboard after 3 seconds
+                        setTimeout(function() {
+                            window.location.href = '../dashboard/index.php';
+                        }, 3000);
+
                     },
                     error: function() {
                         $('#status-text').html('<span class="text-danger">Update Failed!</span> Please contact support.');

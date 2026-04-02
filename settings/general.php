@@ -13,9 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['settings']['auto_update_enabled'] = '0';
         }
         foreach ($_POST['settings'] as $key => $value) {
-
-            $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = ?");
-            $stmt->execute([sanitize($value), $key]);
+            $stmt = $pdo->prepare("INSERT INTO settings (key_name, key_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE key_value = VALUES(key_value)");
+            $stmt->execute([$key, sanitize($value)]);
         }
     }
 
@@ -58,25 +57,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">COMPANY NAME</label>
-                                <input type="text" name="settings[company_name]" value="<?php echo $settings['company_name']; ?>" class="form-control">
+                                <input type="text" name="settings[company_name]" value="<?php echo $settings['company_name'] ?? ''; ?>" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">EMAIL ADDRESS</label>
-                                <input type="email" name="settings[company_email]" value="<?php echo $settings['company_email']; ?>" class="form-control">
+                                <input type="email" name="settings[company_email]" value="<?php echo $settings['company_email'] ?? ''; ?>" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">PHONE NUMBER</label>
-                                <input type="text" name="settings[company_phone]" value="<?php echo $settings['company_phone']; ?>" class="form-control">
+                                <input type="text" name="settings[company_phone]" value="<?php echo $settings['company_phone'] ?? ''; ?>" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-12 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">ADDRESS</label>
-                                <textarea name="settings[company_address]" class="form-control" rows="2"><?php echo $settings['company_address']; ?></textarea>
+                                <textarea name="settings[company_address]" class="form-control" rows="2"><?php echo $settings['company_address'] ?? ''; ?></textarea>
                             </div>
                         </div>
 
@@ -101,13 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">CURRENCY SYMBOL</label>
-                                <input type="text" name="settings[currency_symbol]" value="<?php echo $settings['currency_symbol']; ?>" class="form-control">
+                                <input type="text" name="settings[currency_symbol]" value="<?php echo $settings['currency_symbol'] ?? ''; ?>" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">INVOICE PREFIX</label>
-                                <input type="text" name="settings[invoice_prefix]" value="<?php echo $settings['invoice_prefix']; ?>" class="form-control">
+                                <input type="text" name="settings[invoice_prefix]" value="<?php echo $settings['invoice_prefix'] ?? ''; ?>" class="form-control">
                             </div>
                         </div>
 
@@ -118,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-group mb-4">
                                 <label class="text-muted small fw-bold">AUTO-UPDATE SYSTEM</label>
                                 <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" name="settings[auto_update_enabled]" value="1" id="autoUpd" <?php echo ($settings['auto_update_enabled'] == '1') ? 'checked' : ''; ?>>
+                                    <input class="form-check-input" type="checkbox" name="settings[auto_update_enabled]" value="1" id="autoUpd" <?php echo (($settings['auto_update_enabled'] ?? '0') == '1') ? 'checked' : ''; ?>>
                                     <label class="form-check-label text-muted" for="autoUpd">Check & Pull Updates from GitHub</label>
                                 </div>
                             </div>
@@ -126,13 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">GIT REMOTE NAME</label>
-                                <input type="text" name="settings[git_remote_name]" value="<?php echo $settings['git_remote_name'] ?: 'origin'; ?>" class="form-control" placeholder="origin">
+                                <input type="text" name="settings[git_remote_name]" value="<?php echo $settings['git_remote_name'] ?? 'origin'; ?>" class="form-control" placeholder="origin">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="form-group mb-3">
                                 <label class="text-muted small fw-bold">GIT BRANCH NAME</label>
-                                <input type="text" name="settings[git_branch_name]" value="<?php echo $settings['git_branch_name'] ?: 'main'; ?>" class="form-control" placeholder="main">
+                                <input type="text" name="settings[git_branch_name]" value="<?php echo $settings['git_branch_name'] ?? 'main'; ?>" class="form-control" placeholder="main">
                             </div>
                         </div>
 

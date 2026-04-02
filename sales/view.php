@@ -45,14 +45,12 @@ $items = $stmt_items->fetchAll();
                             <p class="text-muted small mt-1"><?php echo $settings['company_address'] ?? 'Dhaka, Bangladesh'; ?><br>Email: <?php echo $settings['company_email'] ?? 'admin@example.com'; ?> | Phone: <?php echo $settings['company_phone'] ?? '0123456789'; ?></p>
                         </div>
                         <div class="invoice-meta text-end">
-                            <h1 class="text-uppercase fw-bold text-warning mb-1" style="font-size: 3rem; letter-spacing: -2px;">INVOICE</h1>
-                            <div class="bg-light p-3 rounded-3 d-inline-block shadow-sm">
-                                <p class="mb-0 text-muted small fw-bold">INVOICE NO</p>
-                                <h4 class="fw-bold text-primary mb-2">#<?php echo $sale['invoice_no']; ?></h4>
-                                <p class="mb-0 text-muted small fw-bold">DATE</p>
-                                <h5 class="fw-bold m-0"><?php echo date('d M, Y', strtotime($sale['sale_date'])); ?></h5>
+                            <h1 class="text-uppercase fw-bold text-warning mb-0" style="font-size: 2.2rem; letter-spacing: -1px;">INVOICE</h1>
+                            <div class="bg-light p-2 rounded-3 d-inline-block border">
+                                <p class="mb-0 text-muted small fw-bold">NO: <span class="text-primary">#<?php echo $sale['invoice_no']; ?></span> | DATE: <?php echo date('d M, Y', strtotime($sale['sale_date'])); ?></p>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Client Info -->
@@ -66,13 +64,15 @@ $items = $stmt_items->fetchAll();
                         <div class="col-6 text-end">
                             <h6 class="text-muted text-uppercase fw-bold small mb-3">Status:</h6>
                             <h5 class="mb-1"><span class="badge bg-lightgreen text-success py-2 px-3 fw-bold">PAID (<?php echo $sale['payment_method']; ?>)</span></h5>
-                            <p class="text-muted small">Processed by: <strong><?php echo htmlspecialchars($sale['creator_name'] ?? 'System'); ?></strong></p>
+                            <p class="text-muted small">Invoice Created By: <strong class="text-dark"><?php echo htmlspecialchars($sale['creator_name'] ?? 'System'); ?></strong></p>
+
 
                         </div>
                     </div>
 
                     <!-- Items Table -->
-                    <div class="table-responsive mt-5">
+                    <div class="table-responsive mt-3">
+
                         <table class="table table-hover">
                             <thead class="bg-warning text-white">
                                 <tr>
@@ -103,39 +103,39 @@ $items = $stmt_items->fetchAll();
                     </div>
 
                     <!-- Calculations & Notes Row -->
-                    <div class="row mt-4">
+                    <div class="row mt-3">
                         <div class="col-7">
                             <div class="p-3 bg-light rounded-4 h-100 border-start border-4 border-warning">
-                                <h6 class="fw-bold mb-2 text-dark text-uppercase small">Payment Notes:</h6>
+                                <h6 class="fw-bold mb-1 text-dark text-uppercase small">Payment Notes:</h6>
                                 <p class="text-muted small mb-0 italic"><?php echo $sale['notes'] ?: 'No special notes for this transaction.'; ?></p>
                             </div>
                         </div>
                         <div class="col-5">
-                            <div class="card bg-white border-0 shadow-sm rounded-4">
-                                <div class="card-body p-4">
-                                    <div class="d-flex justify-content-between mb-3">
+                            <div class="card bg-white border border-light shadow-sm rounded-4">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted fw-bold small">SUBTOTAL</span>
-                                        <span class="fw-bold">৳ <?php echo number_format($sale['subtotal'], 2); ?></span>
+                                        <span class="fw-bold text-dark">৳ <?php echo number_format($sale['subtotal'], 2); ?></span>
                                     </div>
                                     <?php if($sale['discount'] > 0): ?>
-                                    <div class="d-flex justify-content-between mb-3 text-danger">
+                                    <div class="d-flex justify-content-between mb-2 text-danger">
                                         <span class="fw-bold small">DISCOUNT (-)</span>
                                         <span class="fw-bold">৳ <?php echo number_format($sale['discount'], 2); ?></span>
                                     </div>
                                     <?php endif; ?>
-                                    <hr>
-                                    <div class="d-flex justify-content-between mb-4 mt-2">
-                                        <span class="h5 fw-bold text-dark">GRAND TOTAL</span>
-                                        <span class="h4 fw-bold text-warning">৳ <?php echo number_format($sale['total_amount'], 2); ?></span>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-bold text-dark small text-uppercase">Grand Total</span>
+                                        <span class="h5 fw-bold text-warning mb-0">৳ <?php echo number_format($sale['total_amount'], 2); ?></span>
                                     </div>
-                                    <div class="p-3 bg-light rounded-3">
+                                    <div class="p-2 bg-light rounded-3">
                                         <div class="d-flex justify-content-between small mb-1">
-                                            <span class="text-success fw-bold">AMOUNT PAID</span>
+                                            <span class="text-success fw-bold">PAID</span>
                                             <span class="text-success fw-bold">৳ <?php echo number_format($sale['paid_amount'], 2); ?></span>
                                         </div>
                                         <?php if($sale['due_amount'] > 0): ?>
                                         <div class="d-flex justify-content-between small">
-                                            <span class="text-danger fw-bold">BALANCE DUE</span>
+                                            <span class="text-danger fw-bold">DUE</span>
                                             <span class="text-danger fw-bold">৳ <?php echo number_format($sale['due_amount'], 2); ?></span>
                                         </div>
                                         <?php endif; ?>
@@ -146,23 +146,25 @@ $items = $stmt_items->fetchAll();
                     </div>
 
                     <!-- Signature Row -->
-                    <div class="row" style="margin-top: 60px;">
+                    <div class="row" style="margin-top: 45px;">
                         <div class="col-6 text-center">
                             <div class="d-inline-block">
-                                <div class="border-bottom border-dark" style="width: 220px;"></div>
-                                <p class="mt-2 text-dark fw-bold small text-uppercase">Customer Signature</p>
+                                <div class="border-bottom border-dark" style="width: 180px;"></div>
+                                <p class="mt-1 text-dark fw-bold small text-uppercase" style="font-size: 0.75rem;">Customer Signature</p>
                             </div>
                         </div>
                         <div class="col-6 text-center">
                             <div class="d-inline-block">
-                                <div class="border-bottom border-dark" style="width: 220px;"></div>
-                                <p class="mt-2 text-dark fw-bold small text-uppercase">Authorized Signature</p>
+                                <div class="border-bottom border-dark" style="width: 180px;"></div>
+                                <p class="mt-1 text-dark fw-bold small text-uppercase" style="font-size: 0.75rem;">Authorized Signature</p>
                             </div>
                         </div>
                     </div>
 
+
                     
-                    <div class="footer text-center mt-5 pt-5 border-top">
+                    <div class="footer text-center mt-3 pt-3 border-top">
+
                         <p class="text-dark fw-bold mb-1">Thank you for your business!</p>
                         <p class="text-muted small">Generated on <?php echo date('d-m-Y H:i:s'); ?> | Developed by <strong>ARG RABBI</strong></p>
                     </div>

@@ -4,9 +4,10 @@ require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
 $id = (int)($_GET['id'] ?? 0);
-$stmt = $pdo->prepare("SELECT s.*, c.name as customer_name, c.phone, c.address FROM sales s LEFT JOIN customers c ON s.customer_id = c.id WHERE s.id = ?");
+$stmt = $pdo->prepare("SELECT s.*, c.name as customer_name, c.phone, c.address, u.name as creator_name FROM sales s LEFT JOIN customers c ON s.customer_id = c.id LEFT JOIN users u ON s.created_by = u.id WHERE s.id = ?");
 $stmt->execute([$id]);
 $sale = $stmt->fetch();
+
 
 if (!$sale) {
     echo "<script>window.location='list.php';</script>";
@@ -65,7 +66,8 @@ $items = $stmt_items->fetchAll();
                         <div class="col-6 text-end">
                             <h6 class="text-muted text-uppercase fw-bold small mb-3">Status:</h6>
                             <h5 class="mb-1"><span class="badge bg-lightgreen text-success py-2 px-3 fw-bold">PAID (<?php echo $sale['payment_method']; ?>)</span></h5>
-                            <p class="text-muted small">Processed by: <strong><?php echo $_SESSION['name']; ?></strong></p>
+                            <p class="text-muted small">Processed by: <strong><?php echo htmlspecialchars($sale['creator_name'] ?? 'System'); ?></strong></p>
+
                         </div>
                     </div>
 
@@ -100,16 +102,12 @@ $items = $stmt_items->fetchAll();
                         </table>
                     </div>
 
-                    <!-- Calculations -->
-                    <div class="row mt-5">
+                    <!-- Calculations & Notes Row -->
+                    <div class="row mt-4">
                         <div class="col-7">
-                            <div class="p-4 bg-light rounded-4 h-100 border-start border-4 border-warning shadow-sm">
-                                <h6 class="fw-bold mb-3 text-dark text-uppercase small">Payment Notes:</h6>
-                                <p class="text-muted small mb-4 italic"><?php echo $sale['notes'] ?: 'No special notes for this transaction.'; ?></p>
-                                <div class="mt-auto">
-                                    <p class="mb-1 text-muted small">Authorized signature for: <strong><?php echo $settings['company_name'] ?? 'Inventory POS'; ?></strong></p>
-                                    <div class="mt-4 border-bottom d-inline-block" style="width: 250px;"></div>
-                                </div>
+                            <div class="p-3 bg-light rounded-4 h-100 border-start border-4 border-warning">
+                                <h6 class="fw-bold mb-2 text-dark text-uppercase small">Payment Notes:</h6>
+                                <p class="text-muted small mb-0 italic"><?php echo $sale['notes'] ?: 'No special notes for this transaction.'; ?></p>
                             </div>
                         </div>
                         <div class="col-5">
@@ -146,6 +144,23 @@ $items = $stmt_items->fetchAll();
                             </div>
                         </div>
                     </div>
+
+                    <!-- Signature Row -->
+                    <div class="row" style="margin-top: 60px;">
+                        <div class="col-6 text-center">
+                            <div class="d-inline-block">
+                                <div class="border-bottom border-dark" style="width: 220px;"></div>
+                                <p class="mt-2 text-dark fw-bold small text-uppercase">Customer Signature</p>
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="d-inline-block">
+                                <div class="border-bottom border-dark" style="width: 220px;"></div>
+                                <p class="mt-2 text-dark fw-bold small text-uppercase">Authorized Signature</p>
+                            </div>
+                        </div>
+                    </div>
+
                     
                     <div class="footer text-center mt-5 pt-5 border-top">
                         <p class="text-dark fw-bold mb-1">Thank you for your business!</p>
@@ -287,11 +302,20 @@ $('#addPaymentForm').on('submit', function(e) {
 
 <style>
 @media print {
-    .sidebar, .header, .page-header, .btn, footer, .no-print, .payment-history-section { display: none !important; }
-    .page-wrapper { margin: 0 !important; padding: 0 !important; }
-    .card { border: none !important; box-shadow: none !important; }
-    .card-body { padding: 0 !important; }
+    .sidebar, .header, .page-header, .btn, footer, .no-print, .payment-history-section, .modal { display: none !important; }
+    .page-wrapper { margin: 0 !important; padding: 0 !important; width: 100% !important; min-height: unset !important; }
+    .content { padding: 0 !important; margin: 0 !important; }
+    .card { border: none !important; box-shadow: none !important; margin: 0 !important; }
+    .card-body { padding: 10mm !important; }
+    body { background: white !important; font-size: 12px; }
+    .table th, .table td { padding: 8px !important; }
+    .invoice-container { width: 100% !important; }
+    @page { margin: 0.5cm; size: a4; }
+    .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
+    .bg-warning { background-color: #ff9f43 !important; -webkit-print-color-adjust: exact; }
+    .text-white { color: white !important; -webkit-print-color-adjust: exact; }
 }
+
 </style>
 
 

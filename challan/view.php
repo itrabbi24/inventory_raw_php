@@ -136,7 +136,7 @@ $items = $stmt_items->fetchAll();
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 .invoice-container { font-family: 'Inter', sans-serif; line-height: 1.1; }
-.logo-img { max-height: 80px; width: auto; object-fit: contain; }
+.logo-img { max-height: 120px; width: auto; object-fit: contain; }
 .fw-extrabold { font-weight: 800; }
 .x-small { font-size: 10px; }
 .bg-success { background-color: #28a745 !important; }

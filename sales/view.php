@@ -208,7 +208,7 @@ $items = $stmt_items->fetchAll();
                                     <td class="px-4"><span class="badge bg-light text-dark border px-3 py-2 text-uppercase small"><?php echo $p['method']; ?></span></td>
                                     <td class="px-4 fw-bold text-success">৳ <?php echo number_format($p['amount'], 2); ?></td>
                                     <td class="px-4 text-muted small"><?php echo $p['note'] ?: '-'; ?></td>
-                                    <td class="px-4 small"><?php echo htmlspecialchars($p['staff_name'] ?? 'Create By: ' . $p['created_by']); ?></td>
+                                    <td class="px-4 small"><?php echo htmlspecialchars($p['staff_name'] ?? 'Created By: ' . $p['created_by']); ?></td>
 
                                 </tr>
                                 <?php endforeach; endif; ?>

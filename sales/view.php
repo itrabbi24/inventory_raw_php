@@ -182,10 +182,11 @@ $items = $stmt_items->fetchAll();
                     </div>
 
                     <?php
-                    $stmt_p = $pdo->prepare("SELECT * FROM sale_payments WHERE sale_id = ? ORDER BY id DESC");
+                    $stmt_p = $pdo->prepare("SELECT sp.*, u.name as staff_name FROM sale_payments sp LEFT JOIN users u ON sp.created_by = u.id WHERE sp.sale_id = ? ORDER BY sp.id DESC");
                     $stmt_p->execute([$id]);
                     $payments = $stmt_p->fetchAll();
                     ?>
+
 
                     <div class="table-responsive">
                         <table class="table table-hover border">
@@ -207,7 +208,8 @@ $items = $stmt_items->fetchAll();
                                     <td class="px-4"><span class="badge bg-light text-dark border px-3 py-2 text-uppercase small"><?php echo $p['method']; ?></span></td>
                                     <td class="px-4 fw-bold text-success">৳ <?php echo number_format($p['amount'], 2); ?></td>
                                     <td class="px-4 text-muted small"><?php echo $p['note'] ?: '-'; ?></td>
-                                    <td class="px-4 small">Staff ID: <?php echo $p['created_by']; ?></td>
+                                    <td class="px-4 small"><?php echo htmlspecialchars($p['staff_name'] ?? 'Create By: ' . $p['created_by']); ?></td>
+
                                 </tr>
                                 <?php endforeach; endif; ?>
                             </tbody>

@@ -311,8 +311,8 @@ CREATE TABLE `settings` (
 -- 20. migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `migration_name` VARCHAR(255) NOT NULL UNIQUE,
-  `executed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  `migration` VARCHAR(255) NOT NULL UNIQUE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `settings` (`key_name`, `key_value`) VALUES

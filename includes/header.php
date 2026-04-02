@@ -93,14 +93,14 @@ if (($settings['auto_update_enabled'] ?? '0') === '1') {
                 <a href="<?php echo BASE_URL; ?>dashboard/index.php" class="logo">
                     <?php 
                     $logo = $settings['company_logo'] ?? '';
-                    $logoPath = $logo ? BASE_URL . 'uploads/company/' . $logo : BASE_URL . 'assets/img/logo.png';
+                    $logoPath = $logo ? BASE_URL . 'uploads/logo/' . $logo : BASE_URL . 'assets/img/logo.png';
                     ?>
                     <img src="<?php echo $logoPath; ?>" alt="Logo">
                 </a>
                 <a href="<?php echo BASE_URL; ?>dashboard/index.php" class="logo-small">
                     <?php 
                     $logoSmall = $settings['company_logo_small'] ?? $logo;
-                    $logoSmallPath = $logoSmall ? BASE_URL . 'uploads/company/' . $logoSmall : BASE_URL . 'assets/img/logo-small.png';
+                    $logoSmallPath = $logoSmall ? BASE_URL . 'uploads/logo/' . $logoSmall : BASE_URL . 'assets/img/logo-small.png';
                     ?>
                     <img src="<?php echo $logoSmallPath; ?>" alt="Logo">
                 </a>

@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Logo upload handling
     if (isset($_FILES['company_logo']) && $_FILES['company_logo']['error'] === UPLOAD_ERR_OK) {
         try {
-            $logo_name = uploadFile($_FILES['company_logo'], 'logo');
+            $logo_name = uploadFile($_FILES['company_logo'], UPLOAD_PATH . 'logo/');
             $stmt = $pdo->prepare("UPDATE settings SET key_value = ? WHERE key_name = 'company_logo'");
             $stmt->execute([$logo_name]);
         } catch (Exception $e) {

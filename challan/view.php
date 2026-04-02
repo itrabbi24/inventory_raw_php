@@ -75,8 +75,10 @@ $items = $stmt_items->fetchAll();
                                 <tr class="bg-success text-white text-center">
                                     <th style="width: 40px;">#</th>
                                     <th>Product & Specification</th>
-                                    <th style="width: 80px;">QTY</th>
+                                    <th style="width: 100px;">Warranty</th>
+                                    <th style="width: 60px;">QTY</th>
                                     <th style="width: 180px;">Serial / Tracking No</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,6 +91,7 @@ $items = $stmt_items->fetchAll();
                                             <p class="text-muted x-small lh-xs mt-1 mb-0"><?php echo nl2br($item['description']); ?></p>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="text-center small fw-bold text-success"><?php echo $item['warranty_months'] > 0 ? $item['warranty_months'] . ' Months' : 'No Warranty'; ?></td>
                                     <td class="text-center fw-bold h5 mb-0"><?php echo $item['quantity']; ?></td>
                                     <td class="py-2 text-center text-muted">
                                         <?php if(!empty($item['serial_number'])): ?>
@@ -97,6 +100,7 @@ $items = $stmt_items->fetchAll();
                                             <span class="italic small">-</span>
                                         <?php endif; ?>
                                     </td>
+
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>

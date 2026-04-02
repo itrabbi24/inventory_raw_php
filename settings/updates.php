@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
 // Fetch apply update if requested
 if (isset($_GET['action']) && $_GET['action'] == 'apply') {
-    $result = applyGitUpdates($pdo, $settings);
+    $result = applyGitUpdates($pdo, $settings, true); // Force manually
     if ($result['status'] === true) {
         $_SESSION['message'] = '<div class="alert alert-success mt-3 py-3 shadow-sm border-0"><i class="fas fa-check-circle me-2"></i><strong>Success!</strong> ' . $result['msg'] . '</div>';
     } else {

@@ -13,7 +13,7 @@ $status = "Initializing System Update...";
 $done = false;
 
 if (isset($_GET['execute'])) {
-    $output = applyGitUpdates($pdo, $settings);
+    $output = applyGitUpdates($pdo, $settings, true); // Force from progress bar
     // After code update, run migrations again just in case the code change included new migrations
     runMigrations($pdo);
     echo json_encode(['success' => true, 'output' => $output]);

@@ -72,7 +72,8 @@ if (isset($_GET['execute'])) {
                         $('#pb').css('width', '100%');
                         $('#pb').removeClass('progress-bar-animated');
                         $('#status-text').html('<span class="text-success fw-bold">Update Complete!</span> System is now up to date.');
-                        $('#console').html(res.output.replace(/\n/g, '<br>')).fadeIn();
+                        let outputText = (typeof res.output === 'string') ? res.output : (res.output.msg || JSON.stringify(res.output));
+                        $('#console').html(outputText.replace(/\n/g, '<br>')).fadeIn();
                         $('.loader-spin').html('<i class="fas fa-check-circle text-success animate__animated animate__bounceIn"></i>');
                         $('#complete-btn').fadeIn();
                         

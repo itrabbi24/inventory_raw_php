@@ -173,7 +173,7 @@ function addRow() {
     let newRow = table.insertRow();
     newRow.innerHTML = `
         <td>
-            <select class="form-control" name="product_id[]" required>
+            <select class="form-control" name="product_id[]" onchange="updatePrice(this)" required>
                 <option value="">Select Product</option>
                 <?php foreach ($products as $p): ?><option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option><?php endforeach; ?>
             </select>
@@ -184,9 +184,32 @@ function addRow() {
         <td><input type="number" name="quantity[]" value="1" class="form-control" oninput="calculateTotals()"></td>
         <td><input type="number" name="unit_price[]" value="0" class="form-control" oninput="calculateTotals()"></td>
         <td class="row-total text-end fw-bold">0.00</td>
-        <td class="text-center"><button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); calculateTotals();"><i class="fas fa-minus"></i></button></td>
+        <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove(); calculateTotals();"><i class="fas fa-minus"></i></button></td>
     `;
+    // If using select2 globally, you may need to re-init here for this specific field
+    if($.fn.select2) $(newRow).find('select').select2();
 }
+
+function updatePrice(element) {
+    let productId = element.value;
+    if(!productId) return;
+    
+    let row = element.parentElement.parentElement;
+    let priceInput = row.cells[5].getElementsByTagName('input')[0];
+    
+    $.ajax({
+        url: '<?php echo BASE_URL; ?>ajax/get_product.php',
+        method: 'GET',
+        data: { id: productId },
+        success: function(res) {
+            if(res.success) {
+                priceInput.value = res.price;
+                calculateTotals();
+            }
+        }
+    });
+}
+
 
 
 function calculateTotals() {

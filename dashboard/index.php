@@ -23,14 +23,23 @@ $stmt = $pdo->prepare("SELECT COALESCE(SUM(total_amount),0) FROM sales WHERE sal
 $stmt->execute([$startOfMonth, $today]);
 $monthRevenue = $stmt->fetchColumn();
 
-$stmt = $pdo->prepare("SELECT COALESCE(SUM(total_price),0) FROM stock_in WHERE purchase_date BETWEEN ? AND ?");
+// Calculate Monthly COGS (Cost of Goods Sold)
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(si.quantity * si.cost_price), 0) 
+    FROM sale_items si 
+    JOIN sales s ON si.sale_id = s.id 
+    WHERE s.sale_date BETWEEN ? AND ?
+");
 $stmt->execute([$startOfMonth, $today]);
-$monthPurchaseCost = $stmt->fetchColumn();
+$monthCOGS = $stmt->fetchColumn();
 
 $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM expenses WHERE expense_date BETWEEN ? AND ?");
 $stmt->execute([$startOfMonth, $today]);
 $monthExpenseTotal = $stmt->fetchColumn();
-$monthlyProfit = $monthRevenue - $monthPurchaseCost - $monthExpenseTotal;
+
+// Net Profit = Revenue - COGS - Expenses
+$monthlyProfit = $monthRevenue - $monthCOGS - $monthExpenseTotal;
+
 
 // CHART DATA: Last 7 Days Activity
 $chartLabels = [];
